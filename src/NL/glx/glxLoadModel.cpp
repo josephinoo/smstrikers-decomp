@@ -29,6 +29,99 @@ static bool glIgnoreDuplicateModels;
 
 static glModel* glxLoadModelFromMemory(char* data, int size, unsigned long* pNumModels, bool bLoadTextures);
 
+#ifdef TARGET_VITA
+static void glxSwapWords(void* data, u32 size)
+{
+    u8* bytes = (u8*)data;
+    for (u32 i = 0; i < size / sizeof(u32); ++i)
+    {
+        u32 value;
+        memcpy(&value, bytes + i * sizeof(u32), sizeof(value));
+        value = __builtin_bswap32(value);
+        memcpy(bytes + i * sizeof(u32), &value, sizeof(value));
+    }
+}
+
+static void glxSwap16(void* data)
+{
+    u16 value;
+    memcpy(&value, data, sizeof(value));
+    value = __builtin_bswap16(value);
+    memcpy(data, &value, sizeof(value));
+}
+
+static void glxSwap32(void* data)
+{
+    u32 value;
+    memcpy(&value, data, sizeof(value));
+    value = __builtin_bswap32(value);
+    memcpy(data, &value, sizeof(value));
+}
+
+static void glxSwap64(void* data)
+{
+    u64 value;
+    memcpy(&value, data, sizeof(value));
+    value = __builtin_bswap64(value);
+    memcpy(data, &value, sizeof(value));
+}
+
+static void glxSwapModelChunk(nlChunk* chunk)
+{
+    chunk->m_ID = __builtin_bswap32(chunk->m_ID);
+    chunk->m_Size = __builtin_bswap32(chunk->m_Size);
+
+    if (chunk->IsNestedChunk())
+    {
+        nlChunk* child = chunk->GetFirstChunk();
+        nlChunk* end = chunk->GetLastChunk();
+        while (child < end)
+        {
+            u32 childSize = __builtin_bswap32(child->m_Size);
+            glxSwapModelChunk(child);
+            child = (nlChunk*)((u8*)child + sizeof(nlChunk) + childSize);
+        }
+        return;
+    }
+
+    u8* payload = (u8*)chunk->GetData();
+    switch (chunk->GetID())
+    {
+    case 0x1B002:
+    case 0x1B003:
+    case 0x1B00F:
+    case 0x1B011:
+    case 0x1B012:
+    case 0x1B00A:
+    case 0x1B00B:
+        glxSwapWords(payload, chunk->GetSize());
+        break;
+    case 0x1B004:
+        for (u32 offset = 0; offset + sizeof(glModelPacket) <= chunk->GetSize(); offset += sizeof(glModelPacket))
+        {
+            u8* packet = payload + offset;
+            glxSwap32(packet + 0x00);
+            glxSwap32(packet + 0x04);
+            glxSwap16(packet + 0x08);
+            glxSwap32(packet + 0x0C);
+            glxSwap64(packet + 0x10);
+            glxSwapWords(packet + 0x18, 0x28);
+            glxSwap32(packet + 0x42);
+            glxSwap32(packet + 0x46);
+        }
+        break;
+    case 0x1B005:
+        for (u32 offset = 0; offset + sizeof(glModelStream) <= chunk->GetSize(); offset += sizeof(glModelStream))
+            glxSwap32(payload + offset);
+        break;
+    case 0x1B007:
+        for (u32 offset = 0; offset + sizeof(u16) <= chunk->GetSize(); offset += sizeof(u16))
+            glxSwap16(payload + offset);
+        break;
+    }
+}
+#endif
+
 // BMD model chunk type IDs.
 enum BMDChunkType
 {
@@ -210,6 +303,15 @@ static glModel* glxLoadModelFromMemory(char* data, int size, unsigned long* pNum
     u8* pIndexData;
     bool hasSkinData;
     nlChunk* chunk;
+
+#ifdef TARGET_VITA
+    for (nlChunk* top = (nlChunk*)data; (char*)top < data + size;)
+    {
+        u32 topSize = __builtin_bswap32(top->m_Size);
+        glxSwapModelChunk(top);
+        top = (nlChunk*)((u8*)top + sizeof(nlChunk) + topSize);
+    }
+#endif
 
     outerChunkPtr = (nlChunk*)data;
     outerEnd = (nlChunk*)(data + size);

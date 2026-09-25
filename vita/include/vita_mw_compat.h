@@ -128,6 +128,7 @@ static inline double __frsqrte(double x) { return 1.0 / sqrt(x); }
 #ifdef __cplusplus
 extern "C" {
 #endif
+void OSReport(const char* message, ...);
 extern int32_t __float_max[];
 extern int32_t __float_huge[];
 extern int32_t __float_nan[];

@@ -15,14 +15,8 @@
 #include <cstdlib>
 #include <cstring>
 
-// glxLoadModel.h
-bool glplatBeginLoadModel(const char* filename, void (*callback)(void*, unsigned long, void*), void* userData) { return false; }
-static char g_DummyModel[1024];
-glModel* glplatEndLoadModel(void* data, unsigned long size, unsigned long* pNumModels) { return (glModel*)g_DummyModel; }
-glModel* glplatLoadModel(const char* filename, unsigned long* pNumModels) { return (glModel*)g_DummyModel; }
-void glSetIgnoreDuplicateModels(bool ignore) {}
-static char g_DummySkinMesh[1024];
-GLSkinMesh* glx_MakeSkinMesh(nlChunk* outerChunk, glModel* models) { return (GLSkinMesh*)g_DummySkinMesh; }
+void glx_FreeMemory0() {}
+void glx_FreeMemory1(const char*) {}
 
 // glxTexture.h
 bool glplatBeginLoadTextureBundle(const char* filename, void (*callback)(void*, unsigned long, void*), void* param) { return false; }

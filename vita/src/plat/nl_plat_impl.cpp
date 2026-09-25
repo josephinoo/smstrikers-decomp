@@ -28,26 +28,6 @@ void nlAssertFail(const char* condition, const char* filename, int line, bool bB
 }
 
 // ---------------------------------------------------------------------------
-// Display lists
-//
-// These are GameCube GX command buffers. The Vita path re-submits geometry
-// through vitaGL every frame instead, so there is nothing to build or look up.
-// ---------------------------------------------------------------------------
-
-DisplayList* dlMakeDisplayList(const glModelPacket* packet, bool permanent)
-{
-    (void)packet;
-    (void)permanent;
-    return nullptr;
-}
-
-DisplayList* dlGetStruct(unsigned long addr)
-{
-    (void)addr;
-    return nullptr;
-}
-
-// ---------------------------------------------------------------------------
 // LexicalCast
 //
 // The primary template only declares Do(); Metrowerks emitted a definition per

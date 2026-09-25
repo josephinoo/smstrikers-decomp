@@ -176,6 +176,8 @@ set(SMS_PLAT_SOURCES
     src/plat/dvd/nl_fs_shim.cpp
     src/plat/gx/glplat_stub.cpp
     src/plat/gx/glx_stubs.cpp
+    ${DECOMP_ROOT}/src/NL/glx/glxLoadModel.cpp
+    ${DECOMP_ROOT}/src/NL/glx/glxDisplayList.cpp
     src/plat/gx/gc_tex_decode.cpp
     src/plat/gx/glplat_texbundle.cpp
     src/plat/gx/vita_gxp_blit.cpp
