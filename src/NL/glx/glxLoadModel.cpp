@@ -115,8 +115,19 @@ static void glxSwapModelChunk(nlChunk* chunk)
             glxSwap32(payload + offset);
         break;
     case 0x1B007:
+    case 0x1B00E:
         for (u32 offset = 0; offset + sizeof(u16) <= chunk->GetSize(); offset += sizeof(u16))
             glxSwap16(payload + offset);
+        break;
+    case 0x1B00C:
+        glxSwapWords(payload, chunk->GetSize());
+        break;
+    case 0x1B00D:
+        for (u32 offset = 0; offset + sizeof(SkinVertex) <= chunk->GetSize(); offset += sizeof(SkinVertex))
+            glxSwapWords(payload + offset, sizeof(nlVector3));
+        break;
+    case 0x1B010:
+        glxSwapWords(payload, 8);
         break;
     }
 }

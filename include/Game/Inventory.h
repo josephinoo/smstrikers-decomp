@@ -35,6 +35,19 @@ public:
 
     void AddFile(char* memory, unsigned long length)
     {
+#ifdef TARGET_VITA
+        for (nlChunk* chunk = (nlChunk*)memory; (char*)chunk < memory + length;)
+        {
+            const bool native = (chunk->m_ID & 0x00FF0000u) == 0x00010000u;
+            const u32 size = native ? chunk->m_Size : __builtin_bswap32(chunk->m_Size);
+            if (!native)
+            {
+                chunk->m_ID = __builtin_bswap32(chunk->m_ID);
+                chunk->m_Size = size;
+            }
+            chunk = (nlChunk*)((u8*)chunk + sizeof(nlChunk) + size);
+        }
+#endif
         m_lMemList.AddStart(memory);
         ParseChunks((nlChunk*)memory, (nlChunk*)(memory + length));
     }
@@ -43,8 +56,7 @@ public:
     {
         unsigned long length;
         char* memory = (char*)nlLoadEntireFile(filename, &length, 0x20, AllocateStart);
-        m_lMemList.AddStart(memory);
-        ParseChunks((nlChunk*)memory, (nlChunk*)(memory + length));
+        AddFile(memory, length);
     }
 
     nlListIterator<T*> Begin()

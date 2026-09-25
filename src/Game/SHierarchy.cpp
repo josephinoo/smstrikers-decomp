@@ -3,11 +3,57 @@
 #include "NL/nlWare.h"
 #include "types.h"
 
+#ifdef TARGET_VITA
+static void SwapHierarchyWords(void* data, u32 size)
+{
+    u32* words = (u32*)data;
+    for (u32 i = 0; i < size / sizeof(u32); ++i)
+        words[i] = __builtin_bswap32(words[i]);
+}
+
+static void SwapHierarchyChunks(nlChunk* outer)
+{
+    nlChunk* end = outer->GetLastChunk();
+    for (nlChunk* chunk = outer->GetFirstChunk(); chunk < end;)
+    {
+        const u32 size = __builtin_bswap32(chunk->m_Size);
+        nlChunk* next = (nlChunk*)((u8*)chunk + sizeof(nlChunk) + size);
+        chunk->m_ID = __builtin_bswap32(chunk->m_ID);
+        chunk->m_Size = size;
+
+        switch (chunk->GetID())
+        {
+        case 0x18001:
+        {
+            u32* hierarchy = (u32*)chunk->GetData();
+            hierarchy[1] = __builtin_bswap32(hierarchy[1]);
+            hierarchy[2] = __builtin_bswap32(hierarchy[2]);
+            hierarchy[9] = __builtin_bswap32(hierarchy[9]);
+            hierarchy[10] = __builtin_bswap32(hierarchy[10]);
+            break;
+        }
+        case 0x18003:
+        case 0x18004:
+        case 0x18007:
+        case 0x18008:
+        case 0x18009:
+        case 0x18010:
+            SwapHierarchyWords(chunk->GetData(), size);
+            break;
+        }
+        chunk = next;
+    }
+}
+#endif
+
 /**
  * Offset/Address/Size: 0x354 | 0x801EE340 | size: 0x3E0
  */
 cSHierarchy* cSHierarchy::Initialize(nlChunk* pChunk)
 {
+#ifdef TARGET_VITA
+    SwapHierarchyChunks(pChunk);
+#endif
     pChunk = pChunk->GetFirstChunk();
     cSHierarchy* pRetval = (cSHierarchy*)pChunk->GetData();
 

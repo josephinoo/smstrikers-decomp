@@ -23,7 +23,71 @@ static inline void* nlGetChunkDataSAnim(nlChunk* chunk)
     return (void*)((u8*)chunk + 8);
 }
 
+#ifdef TARGET_VITA
+#define nlGetNextChunk(chunk) ((nlChunk*)nlAlignUp((u32)(chunk) + (chunk)->m_Size + 8, 4))
+#else
 #define nlGetNextChunk(chunk) ((nlChunk*)((u8*)(chunk) + (chunk)->m_Size + 8))
+#endif
+
+#ifdef TARGET_VITA
+static void SwapSAnim16(void* data, u32 size)
+{
+    u16* values = (u16*)data;
+    for (u32 i = 0; i < size / sizeof(u16); ++i)
+        values[i] = __builtin_bswap16(values[i]);
+}
+
+static void SwapSAnim32(void* data, u32 size)
+{
+    u32* values = (u32*)data;
+    for (u32 i = 0; i < size / sizeof(u32); ++i)
+        values[i] = __builtin_bswap32(values[i]);
+}
+
+static void SwapSAnimChunks(nlChunk* outer)
+{
+    nlChunk* end = outer->GetLastChunk();
+    for (nlChunk* chunk = outer->GetFirstChunk(); chunk < end;)
+    {
+        const u32 currentType = chunk->GetID();
+        const bool native = (currentType >= 0x17000 && currentType <= 0x17103) ||
+                            currentType == 0x80017100 || currentType == 0x80001001;
+        const u32 size = native ? chunk->m_Size : __builtin_bswap32(chunk->m_Size);
+        nlChunk* next = (nlChunk*)nlAlignUp((u32)chunk + sizeof(nlChunk) + size, 4);
+        if (!native)
+        {
+            chunk->m_ID = __builtin_bswap32(chunk->m_ID);
+            chunk->m_Size = size;
+        }
+
+        const u32 type = chunk->GetID();
+        if (type == 0x80017100)
+        {
+            SwapSAnimChunks(chunk);
+        }
+        else if (!native && type == 0x17001)
+        {
+            u32* anim = (u32*)chunk->GetData();
+            anim[1] = __builtin_bswap32(anim[1]);
+            anim[2] = __builtin_bswap32(anim[2]);
+            anim[3] = __builtin_bswap32(anim[3]);
+            anim[4] = __builtin_bswap32(anim[4]);
+            anim[9] = __builtin_bswap32(anim[9]);
+            anim[17] = __builtin_bswap32(anim[17]);
+        }
+        else if (!native && (type == 0x17101 || type == 0x17103 || type == 0x17007))
+        {
+            SwapSAnim16(chunk->GetData(), size);
+        }
+        else if (!native && (type == 0x17102 || type == 0x17008 || type == 0x17009 ||
+                             type == 0x1700A || type == 0x17003))
+        {
+            SwapSAnim32(chunk->GetData(), size);
+        }
+        chunk = next;
+    }
+}
+#endif
 
 #pragma inline_depth(8)
 #pragma inline_max_size(0x10000)
@@ -33,6 +97,9 @@ static inline void* nlGetChunkDataSAnim(nlChunk* chunk)
  */
 cSAnim* cSAnim::Initialize(nlChunk* pChunk)
 {
+#ifdef TARGET_VITA
+    SwapSAnimChunks(pChunk);
+#endif
     nlChunk* chunkA = (nlChunk*)((u8*)pChunk + 8);
     nlChunk* end = nlGetNextChunk(pChunk);
     nlChunk* chunkB;
