@@ -144,7 +144,14 @@ void nlInitMemory()
         }
 
         StandardAllocator.Initialize(ptr, heapSize - 0x40000);
+#ifndef TARGET_VITA
         VirtualAllocator.Initialize((void*)0x7E000000, 0x900000);
+#else
+        // 0x7E000000 is a fixed GameCube mapping that VMAlloc backs. There is
+        // no such address on the Vita, so give the virtual allocator a real
+        // block of the same size instead.
+        VirtualAllocator.Initialize(OSAllocFromHeap(__OSCurrHeap, 0x900000), 0x900000);
+#endif
         OSReport("After nlInitMemory\n");
         OSReport("Free Memory: %u\n", StandardAllocator.TotalFreeMemory());
         OSReport("Largest Free Block: %u\n", StandardAllocator.LargestFreeBlock());

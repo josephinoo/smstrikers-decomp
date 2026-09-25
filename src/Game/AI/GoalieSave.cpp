@@ -254,12 +254,20 @@ void GoalieSave::ClearData()
 
     if (mpSaveTable != NULL)
     {
+        #ifdef TARGET_VITA
+        delete[] ((u8*)mpSaveTable);
+#else
         delete[] ((u8*)mpSaveTable - 0x10);
+#endif
     }
 
     if (mpPositionTable != NULL)
     {
+        #ifdef TARGET_VITA
+        delete[] ((u8*)mpPositionTable);
+#else
         delete[] ((u8*)mpPositionTable - 0x10);
+#endif
     }
 
     mbInitialized = 0;

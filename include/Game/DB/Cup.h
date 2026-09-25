@@ -2,6 +2,7 @@
 #define _CUP_H_
 
 #include "types.h"
+#include "dolphin/os.h"
 #include "Game/Team.h"
 #include "Game/DB/BasicGameInfo.h"
 #include "Game/DB/UserOptions.h"

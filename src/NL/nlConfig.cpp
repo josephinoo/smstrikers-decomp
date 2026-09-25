@@ -540,7 +540,11 @@ Config::~Config()
 {
     if (mTvpHash != NULL)
     {
+#ifdef TARGET_VITA
+        ::operator delete[]((char*)mTvpHash);
+#else
         ::operator delete[]((char*)mTvpHash - 0x10);
+#endif
     }
 
     ::operator delete[](mStringMemory);

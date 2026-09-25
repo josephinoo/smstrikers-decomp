@@ -113,7 +113,9 @@ void SetupMatrices()
     }
     glViewSetProjectionMatrix(GLV_ShadowBlend0, hFlat);
     glViewSetProjectionMatrix(GLV_ShadowBlend1, hFlat);
-    glViewSetProjectionMatrix(GLV_FrontEnd, hFlat);
+    // FE fen space is centered on origin (±320/±240). Flat ortho is 0..640 and
+    // clips the left/bottom half — only a strip of the title was visible.
+    glViewSetProjectionMatrix(GLV_FrontEnd, hOrtho);
     glViewSetProjectionMatrix(GLV_Debug, hFlat);
     glViewSetProjectionMatrix(GLV_Transitions, hFlat);
     glViewSetProjectionMatrix(GLV_WarbleBlend, hFlat);

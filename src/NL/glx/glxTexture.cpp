@@ -394,6 +394,11 @@ bool glplatLoadTextureBundle(const char* filename)
     pHeader = (glTexBundleHeader*)nlMalloc(0x20, 0x20, 1);
     nlRead(pFile, pHeader, 0x20);
 
+#ifdef TARGET_VITA
+#include "vita_bswap.h"
+    vita_bswap_region(pHeader, 0x20, SWAP_U32);
+#endif
+
     uNumFiles = pHeader->numTextures;
     uSize = uNumFiles * sizeof(glTexBundleDict);
     // Keep dictionarySize as its own copy: passing uSize directly instead costs
@@ -401,6 +406,10 @@ bool glplatLoadTextureBundle(const char* filename)
 
     pDictionary = (glTexBundleDict*)nlMalloc((uBaseOffset = dictionarySize), 0x20, 1);
     nlRead(pFile, pDictionary, dictionarySize);
+
+#ifdef TARGET_VITA
+    vita_bswap_region(pDictionary, dictionarySize, SWAP_U32);
+#endif
 
     pData = (unsigned char*)nlMalloc(0x40800, 0x20, 1);
     nlQSort<glTexBundleDict>(pDictionary, uNumFiles, BundleSortProc);
@@ -411,6 +420,11 @@ bool glplatLoadTextureBundle(const char* filename)
     {
         nlSeek(pFile, uBaseOffset + pDictionary[i].offset, 0);
         nlRead(pFile, pData, pDictionary[i].fileSize);
+        
+#ifdef TARGET_VITA
+        vita_bswap_gx_texture_header(pData);
+#endif
+
         if (glxTextureLoad_cb == NULL)
         {
             glplatTextureAdd(pDictionary[i].hash, pData, pDictionary[i].fileSize);
@@ -448,13 +462,28 @@ bool glplatLoadTextureBundle(const char* filename)
  */
 static bool glxParseTextureBundle(const char* filedata)
 {
+#ifdef TARGET_VITA
+    // Cast away const because we need to byte-swap the loaded data in-place
+    char* mutable_filedata = (char*)filedata;
+    vita_bswap_region(mutable_filedata, 0x20, SWAP_U32);
+#endif
+
     const int numTextures = *(int*)(filedata + 4);
     const glTexBundleDict* dict = (glTexBundleDict*)(filedata + 0x20);
+
+#ifdef TARGET_VITA
+    vita_bswap_region((void*)dict, numTextures * 0x10, SWAP_U32);
+#endif
+
     const char* textureData = (char*)dict + (numTextures * 0x10);
 
     for (int i = 0; i < numTextures; i++)
     {
         GXTextureHeader* currentTextureHeader = (GXTextureHeader*)(textureData + dict[i].offset);
+
+#ifdef TARGET_VITA
+        vita_bswap_gx_texture_header((void*)currentTextureHeader);
+#endif
 
         if (glxTextureLoad_cb == NULL)
         {

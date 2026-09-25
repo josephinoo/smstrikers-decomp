@@ -147,6 +147,7 @@ inline void IChooseCaptain::ComponentState::GotoNextPhase()
     switch (mCurrentPhase)
     {
     case PHASE_CHOOSING_CAPTAIN:
+    {
         captaingrid = mParent->mCaptainGridComponents[mHomeAway];
 
         if (!captaingrid->mMapMenu->IsSelectedItemActive())
@@ -223,8 +224,10 @@ inline void IChooseCaptain::ComponentState::GotoNextPhase()
         FEAudio::PlayAnimAudioEvent("sfx_accept_no_screen_change", false);
         mParent->mLastCaptainSelectSoundStrPlayed[mHomeAway] = (char*)FECharacterSound::PlayCaptainName((eTeamID)mParent->mHomeAwayTeam[mHomeAway]);
         break;
+    }
 
     case PHASE_CHOOSING_SIDEKICK:
+    {
         ISidekickGridComponent* sidekickgrid2 = mParent->mSidekickGridComponents[mHomeAway];
 
         sidekickgrid2->mParentComponent->SetActiveSlide("OUT");
@@ -273,6 +276,7 @@ inline void IChooseCaptain::ComponentState::GotoNextPhase()
             FECharacterSound::PlaySidekickName((eSidekickID)mParent->mHomeAwaySidekicks[mHomeAway]);
         }
         break;
+    }
 
     case PHASE_READY:
         if (mParent->mCaptainGridComponents[mHomeAway]->GetSelectedItem() != TEAM_MYSTERY)
@@ -465,6 +469,7 @@ inline void IChooseCaptain::ComponentState::SetCurrentPhase(Phase phase)
         break;
 
     case PHASE_CHOOSING_CAPTAIN:
+    {
         captaingrid = mParent->mCaptainGridComponents[mHomeAway];
         captaingrid->mParentComponent->SetActiveSlide("IN");
         captaingrid->mParentComponent->Update(0.0f);
@@ -515,6 +520,7 @@ inline void IChooseCaptain::ComponentState::SetCurrentPhase(Phase phase)
 
         mParent->mSidekickMiniHeadComponents[mHomeAway]->m_bVisible = false;
         break;
+    }
 
     case PHASE_CHOOSING_SIDEKICK:
         mParent->mCaptainGridComponents[mHomeAway]->mParentComponent->m_bVisible = false;

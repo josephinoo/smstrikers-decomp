@@ -3,8 +3,10 @@
 
 #include "types.h"
 
-#pragma push
-#pragma pack(1)
+// MW used `#pragma push` / `pack(1)` / `pop`. On GCC those do not restore the
+// prior alignment — pack(1) leaks into every later struct in the TU and shifts
+// fen-backed FE layouts (TLTextInstance DrawOptions etc.). Use push/pop form.
+#pragma pack(push, 1)
 struct glStateBundle
 {
     /* 0x00 */ unsigned long long texturestate; // size 0x8
@@ -24,6 +26,6 @@ struct gl_StateBitfield
     /* 0x04 */ s32 numBits;
 }; // total size: 0x8
 
-#pragma pop
+#pragma pack(pop)
 
 #endif // _GLSTATEBUNDLE_H_

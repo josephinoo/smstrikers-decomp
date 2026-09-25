@@ -77,6 +77,7 @@ void VBlankPadUpdate()
 
             if (fabsf(normalizedX) >= 0.6f || fabsf(normalizedY) >= 0.6f)
             {
+#ifndef TARGET_VITA
                 if (fabsf(normalizedX) >= 0.6f)
                 {
                     asm { b doneNormalizedX }
@@ -86,6 +87,12 @@ void VBlankPadUpdate()
                     normalizedX = 0.0f;
                 }
             doneNormalizedX:
+#else
+                // Same thing without the Metrowerks asm goto: keep the axis
+                // when it is past the dead zone, zero it otherwise. Mirrors
+                // the normalizedY line below.
+                normalizedX = (fabsf(normalizedX) >= 0.6f) ? normalizedX : 0.0f;
+#endif
                 normalizedY = (fabsf(normalizedY) >= 0.6f) ? normalizedY : 0.0f;
 
                 float angle = nlATan2f(normalizedY, normalizedX);

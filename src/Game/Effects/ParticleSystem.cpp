@@ -60,7 +60,11 @@ static void FreeParticles()
     {
         if (particleMemory != nullptr)
         {
+            #ifdef TARGET_VITA
+            delete[] ((u8*)particleMemory);
+#else
             delete[] ((u8*)particleMemory - 0x10);
+#endif
         }
         particleMemory = nullptr;
     }

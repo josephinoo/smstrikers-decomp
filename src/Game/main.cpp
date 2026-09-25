@@ -420,8 +420,10 @@ static void SetupViews()
         glViewSetTarget((eGLView)iview, GLTG_Main);
     }
 
-    glViewSetSortMode(GLV_FrontEnd, GLVSort_TransformedDepth);
-    glViewSetSortMode(GLV_Anark, GLVSort_Reverse);
+    // Title/FE present on GLV_Anark (defaultRenderView=31), not only GLV_FrontEnd.
+    // Reverse/depth sorts can drop or reorder equal-Z fen quads; keep submit order.
+    glViewSetSortMode(GLV_FrontEnd, GLVSort_None);
+    glViewSetSortMode(GLV_Anark, GLVSort_None);
 
     for (int iview = 0; iview < sizeof(sort_none) / sizeof(eGLView); iview++)
     {

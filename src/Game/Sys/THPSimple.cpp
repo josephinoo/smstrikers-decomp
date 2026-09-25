@@ -12,8 +12,10 @@
 
 static void THPAudioMixCallback();
 
+#ifndef TARGET_VITA
 extern "C" void* memcpy(void*, const void*, unsigned long);
 extern "C" void* memset(void*, int, unsigned long);
+#endif
 extern "C" int strcmp(const char*, const char*);
 
 static THPSimpleControl SimpleControl;
@@ -637,7 +639,11 @@ static inline int VideoDecode(unsigned char* videoFrame)
  */
 extern "C" long THPSimpleDecode(long audioTrack)
 {
+#ifndef TARGET_VITA
     int* validBuffer;
+#else
+    BOOL* validBuffer;
+#endif
     THPReadBuffer* readBuffer;
     int old;
     unsigned long i;

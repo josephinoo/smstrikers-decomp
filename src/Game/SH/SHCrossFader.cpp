@@ -214,6 +214,22 @@ void CrossFaderScene::SceneCreated()
             (InlineHasher&)h3,
             (InlineHasher&)h1);
 
+        // Vita: englegal fen find can miss (endian/hash); null whitebackground
+        // leaves a black screen while Update pounds SetAssetColour(null).
+        if (mNumImages == 0 || mCurrentImageInstance == nullptr)
+        {
+            AudioLoader::LoadFEAudioData(true);
+            while (!nlSingleton<FESceneManager>::Instance()->AreAllScenesValid())
+            {
+                nlServiceFileSystem();
+                nlSingleton<FESceneManager>::Instance()->Update(0.0f);
+                nlSingleton<FEResourceManager>::Instance()->Run(0.0f);
+            }
+            nlSingleton<GameSceneManager>::Instance()->PopEntireStack();
+            nlSingleton<GameSceneManager>::Instance()->Push(SCENE_INTRO_MOVIE, SCREEN_NOTHING, false);
+            return;
+        }
+
         mFadeState = FS_FADE_IN_INIT;
         mCurrentImage = 0;
     }

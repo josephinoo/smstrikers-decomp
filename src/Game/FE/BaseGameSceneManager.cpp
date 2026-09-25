@@ -66,7 +66,7 @@ struct SceneEntry SceneEntryTable[] = {
     { SCENE_CHOOSE_SIDES_CUP, "art/fe/choose_sides_v3.fen" },
     { SCENE_CHOOSE_SIDES_SUPER_CUP, "art/fe/choose_sides_v3.fen" },
     { SCENE_CHOOSE_SIDES_TOURNAMENT, "art/fe/choose_sides_v3.fen" },
-    { SCENE_CHOOSE_CAPTAINS, "/art/fe/choose_captains_v3.fen" },
+    { SCENE_CHOOSE_CAPTAINS, "art/fe/choose_captains_v3.fen" },
     { SCENE_STADIUM_SELECT, "art/fe/choose_stadiums_v2.fen" },
     { SCENE_CUP_CHEATER, "art/fe/cup_cheater.fen" },
     { SCENE_CUP_BACKGROUND, "art/fe/cup_background.fen" },
@@ -569,8 +569,11 @@ BaseSceneHandler* BaseGameSceneManager::GetScene(SceneList scene)
 void BaseGameSceneManager::Pop()
 {
     FESceneManager::Instance()->QueueScenePop();
-    mBaseSceneHandlerStack[mCurrentStackDepth] = 0;
-    mCurrentStackDepth = (mCurrentStackDepth - 1);
+    if (mCurrentStackDepth > 0)
+    {
+        mCurrentStackDepth = mCurrentStackDepth - 1;
+        mBaseSceneHandlerStack[mCurrentStackDepth] = 0;
+    }
 }
 
 /**

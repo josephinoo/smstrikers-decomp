@@ -169,8 +169,10 @@ void AudioStreamTrack::TrackManagerBase::FadeManager::AddFade(
     fadeCtrl->Callback = callback;
 }
 
+#if !defined(TARGET_VITA) && !defined(TARGET_PC)
 extern "C" void sndStreamMixParameterEx(unsigned long stid, unsigned char vol, unsigned char pan,
     unsigned char span, unsigned char auxa, unsigned char auxb);
+#endif
 
 void AudioStreamTrack::TrackManagerBase::FadeManager::CompleteFade(
     STREAM_FADE_CTRL* fadeCtrl)
@@ -443,8 +445,10 @@ void AudioStreamTrack::StreamTrack::QueueStream(
     }
 }
 
+#if !defined(TARGET_VITA) && !defined(TARGET_PC)
 extern "C" bool sndStreamActivate(unsigned long stid);
 extern "C" void sndStreamDeactivate(unsigned long stid);
+#endif
 
 /**
  * Offset/Address/Size: 0xE20 | 0x80155B78 | size: 0x29C

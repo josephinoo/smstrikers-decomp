@@ -4,7 +4,9 @@
 #include "NL/nlMemory.h"
 #include <dolphin/dvd.h>
 
+#ifndef TARGET_VITA
 extern "C" void* memset(void*, int, unsigned long);
+#endif
 
 inline MemCard::MemCard(unsigned long slot)
     : m_State(IS_IDLE)
@@ -22,7 +24,9 @@ static MemCard* MemCards[2] = { new (8, false) MemCard(0), new (8, false) MemCar
 MemCard** g_MemCards = MemCards;
 bool MemCard::s_InitDone;
 
+#ifndef TARGET_VITA
 extern "C" void* memset(void*, int, unsigned long);
+#endif
 
 /**
  * Offset/Address/Size: 0x12DC | 0x801CAA4C | size: 0xF4

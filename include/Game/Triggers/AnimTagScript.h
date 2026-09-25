@@ -22,6 +22,7 @@ struct AnimTagCBInfo
 
 class AnimTagScriptInterpreter : private InterpreterCore
 {
+    friend class SebringAnimTagScriptInterpreter;
 public:
     AnimTagScriptInterpreter(unsigned int stackSize)
         : InterpreterCore(stackSize)

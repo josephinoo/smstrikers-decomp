@@ -10,6 +10,13 @@ void FEAnimation::Update(float fCurrentTime)
     fAnimationKeyframe* currentFrame;
     float fAnimatedResult;
 
+    // Vita: fen endian/fixup can leave animation targets null; GC never hit this.
+    // Touching m_pTLInstanceTarget->GetAssetColour() then reads null+0x74 (m_overloadFlags).
+    if (m_pTLInstanceTarget == nullptr)
+    {
+        return;
+    }
+
     switch (m_cast_type)
     {
     case 1:
@@ -18,6 +25,11 @@ void FEAnimation::Update(float fCurrentTime)
 
     case 0:
         currentFrame = nlDLRingGetStart<fAnimationKeyframe>((fAnimationKeyframe*)m_DLRingHead);
+        // Vita: bad cast_type endian used to hand us a v3 ring; m_next then looks like a float.
+        if (!currentFrame || ((unsigned long)currentFrame & 0xF0000000u) < 0x80000000u)
+        {
+            return;
+        }
         if (currentFrame != currentFrame->m_next)
         {
             if (fCurrentTime >= currentFrame->pKeyFrameData.m_fTime)
@@ -25,10 +37,18 @@ void FEAnimation::Update(float fCurrentTime)
                 while (fCurrentTime > currentFrame->pKeyFrameData.m_fTime)
                 {
                     currentFrame = currentFrame->m_next;
-                    if (nlDLRingIsEnd<fAnimationKeyframe>((fAnimationKeyframe*)m_DLRingHead, currentFrame))
+                    // Broken fen rings (endian) can leave m_next null; IsEnd(null) is false.
+                    if (currentFrame == nullptr
+                        || ((unsigned long)currentFrame & 0xF0000000u) < 0x80000000u
+                        || nlDLRingIsEnd<fAnimationKeyframe>((fAnimationKeyframe*)m_DLRingHead, currentFrame))
                     {
                         break;
                     }
+                }
+                if (currentFrame == nullptr
+                    || ((unsigned long)currentFrame & 0xF0000000u) < 0x80000000u)
+                {
+                    return;
                 }
 
                 float fTime = currentFrame->pKeyFrameData.m_fTime;
@@ -39,6 +59,11 @@ void FEAnimation::Update(float fCurrentTime)
                 else if (!(fCurrentTime > fTime) || currentFrame->pKeyFrameData.m_fControl1 != -1.0f)
                 {
                     fAnimationKeyframe* prevFrame = currentFrame->m_prev;
+                    if (prevFrame == nullptr
+                        || ((unsigned long)prevFrame & 0xF0000000u) < 0x80000000u)
+                    {
+                        return;
+                    }
                     float fPrevTime = prevFrame->pKeyFrameData.m_fTime;
                     float controlPoints[4] = { 0.0f };
                     controlPoints[0] = prevFrame->pKeyFrameData.m_fPoint;
@@ -73,7 +98,16 @@ void FEAnimation::AnimateTargetAtTimeWithVector3(float fCurrentTime)
     f32 result[3];
     f32 fMu;
 
+    if (m_pTLInstanceTarget == nullptr)
+    {
+        return;
+    }
+
     currentFrame = nlDLRingGetStart<v3AnimationKeyframe>((v3AnimationKeyframe*)this->m_DLRingHead);
+    if (!currentFrame || ((unsigned long)currentFrame & 0xF0000000u) < 0x80000000u)
+    {
+        return;
+    }
 
     if (fCurrentTime < currentFrame->pKeyFrameDataX.m_fTime)
     {
@@ -86,10 +120,17 @@ void FEAnimation::AnimateTargetAtTimeWithVector3(float fCurrentTime)
                || result[0] != currentFrame->pKeyFrameDataX.m_fControl2))
     {
         currentFrame = currentFrame->m_next;
-        if (nlDLRingIsEnd<v3AnimationKeyframe>((v3AnimationKeyframe*)this->m_DLRingHead, currentFrame))
+        if (currentFrame == nullptr
+            || ((unsigned long)currentFrame & 0xF0000000u) < 0x80000000u
+            || nlDLRingIsEnd<v3AnimationKeyframe>((v3AnimationKeyframe*)this->m_DLRingHead, currentFrame))
         {
             break;
         }
+    }
+    if (currentFrame == nullptr
+        || ((unsigned long)currentFrame & 0xF0000000u) < 0x80000000u)
+    {
+        return;
     }
 
     f32 currentTime = currentFrame->pKeyFrameDataX.m_fTime;
@@ -103,6 +144,11 @@ void FEAnimation::AnimateTargetAtTimeWithVector3(float fCurrentTime)
     else if (!(fCurrentTime > currentTime) || currentFrame->pKeyFrameDataX.m_fControl1 != -1.0f)
     {
         v3AnimationKeyframe* prevFrame = currentFrame->m_prev;
+        if (prevFrame == nullptr
+            || ((unsigned long)prevFrame & 0xF0000000u) < 0x80000000u)
+        {
+            return;
+        }
         f32 prevTime = prevFrame->pKeyFrameDataX.m_fTime;
 
         float controlPointsX[4] = { 0 };

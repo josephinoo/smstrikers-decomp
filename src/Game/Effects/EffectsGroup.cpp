@@ -120,7 +120,11 @@ EffectsGroup::~EffectsGroup()
     {
         if (m_specs != nullptr)
         {
+            #ifdef TARGET_VITA
+            ::operator delete[]((char*)m_specs);
+#else
             ::operator delete[]((char*)m_specs - 0x10);
+#endif
         }
     }
     if (m_userSpecs != 0)

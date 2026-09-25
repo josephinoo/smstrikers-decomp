@@ -22,7 +22,9 @@ struct FrontEndAnimAudioData : EventData
     /* 0x04 */ unsigned long audioIdentifier;
 }; // total size: 0x8
 
+#if !defined(TARGET_VITA) && !defined(TARGET_PC)
 extern "C" void qsort(void*, unsigned long, unsigned long, int (*)(const void*, const void*));
+#endif
 
 typedef nlListSlotPoolHigh<AnimAudioEventLookup> FELookupPool;
 
@@ -114,6 +116,11 @@ long FEAudio::PlayAnimAudioEvent(const char* incomingstring, bool value)
         event = NULL;
     }
 
+    if (!event)
+    {
+        return -1;
+    }
+
     if (nlStrICmp<char>(event->szSFXType, "empty") == 0)
     {
         return -1;
@@ -151,6 +158,11 @@ void FEAudio::StopAnimAudioEvent(const char* incomingstring)
         event = NULL;
     }
 
+    if (!event)
+    {
+        return;
+    }
+
     if (nlStrCmp<char>(event->szSFXType, "empty") != 0)
     {
         Audio::StopWorldSFXbyStr(event->szSFXType);
@@ -182,6 +194,11 @@ long FEAudio::PlayAnimAudioEvent(unsigned long incomingHash, bool value)
     else
     {
         event = NULL;
+    }
+
+    if (!event)
+    {
+        return -1;
     }
 
     if (nlStrICmp<char>(event->szSFXType, "empty") == 0)

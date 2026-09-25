@@ -59,6 +59,10 @@ void TLSlide::UpdateAsset(TLInstance* instance, float time)
     TLInstance* child = nlDLRingGetStart<TLInstance>(instance->pChildren);
     for (;;)
     {
+        if (child == NULL)
+        {
+            break;
+        }
         if (child->GetType() == TLAT_COMPONENT)
         {
             ((TLComponentInstance*)child)->Update(time);

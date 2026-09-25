@@ -5,8 +5,13 @@
 
 extern "C"
 {
+#ifndef TARGET_VITA
     void sndStreamMixParameterEx(unsigned long stid, unsigned char vol, unsigned char pan, unsigned char span, unsigned char auxa, unsigned char auxb);
     void sndStreamDeactivate(unsigned long stid);
+#else
+    void sndStreamMixParameterEx(u32 stid, u8 vol, u8 pan, u8 span, u8 auxa, u8 auxb);
+    void sndStreamDeactivate(u32 stid);
+#endif
 }
 
 GCAudioStreaming::AudioBufferMgr g_BufferMgr;

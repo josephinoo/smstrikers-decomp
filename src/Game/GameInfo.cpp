@@ -10,6 +10,7 @@
 #include "Game/World/WorldLoader.h"
 #include "Game/main.h"
 
+#ifdef __MWERKS__
 template <>
 bool LexicalCast<bool, bool>(const bool& value);
 template <>
@@ -38,6 +39,7 @@ LexicalCast<BasicString<char, Detail::TempStringAllocator>, float>(const float& 
 template <>
 BasicString<char, Detail::TempStringAllocator>
 LexicalCast<BasicString<char, Detail::TempStringAllocator>, const char*>(const char* const& value);
+#endif
 
 static bool isKongaUnlocked = false;
 static bool isYoshiUnlocked = false;

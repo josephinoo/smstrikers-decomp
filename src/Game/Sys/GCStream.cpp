@@ -34,6 +34,7 @@ struct SND_ADPCMSTREAM_INFO;
 
 extern "C"
 {
+#ifndef TARGET_VITA
     void sndStreamMixParameterEx(unsigned long stid, unsigned char vol, unsigned char pan, unsigned char span, unsigned char auxa, unsigned char auxb);
     void sndStreamDeactivate(unsigned long stid);
     void sndStreamFree(unsigned long stid);
@@ -41,6 +42,15 @@ extern "C"
     void sndStreamFrq(unsigned long stid, unsigned long frq);
     void sndStreamADPCMParameter(unsigned long stid, SND_ADPCMSTREAM_INFO* adpcmInfo);
     unsigned long sndStreamAllocEx(unsigned char prio, void* buffer, unsigned long samples, unsigned long frq, unsigned char vol, unsigned char pan, unsigned char span, unsigned char auxa, unsigned char auxb, unsigned char studio, unsigned long flags, unsigned long (*updateFunction)(void*, unsigned long, void*, unsigned long, unsigned long), unsigned long user, SND_ADPCMSTREAM_INFO* adpcmInfo);
+#else
+    void sndStreamMixParameterEx(u32 stid, u8 vol, u8 pan, u8 span, u8 auxa, u8 auxb);
+    void sndStreamDeactivate(u32 stid);
+    void sndStreamFree(u32 stid);
+    void sndStreamARAMUpdate(u32 stid, u32 off1, u32 len1, u32 off2, u32 len2);
+    void sndStreamFrq(u32 stid, u32 frq);
+    void sndStreamADPCMParameter(u32 stid, SND_ADPCMSTREAM_INFO* adpcmInfo);
+    u32 sndStreamAllocEx(u8 prio, void* buffer, u32 samples, u32 frq, u8 vol, u8 pan, u8 span, u8 auxa, u8 auxb, u8 studio, u32 flags, u32 (*updateFunction)(void*, u32, void*, u32, u32), u32 user, SND_ADPCMSTREAM_INFO* adpcmInfo);
+#endif
 }
 
 namespace GCAudioStreaming
@@ -259,6 +269,12 @@ inline void GCAudioStreaming::MonoAudioStream::ReadHeader()
  */
 void GCAudioStreaming::MonoAudioStream::Warm(bool CoolOnStop)
 {
+#ifdef TARGET_VITA
+    (void)CoolOnStop;
+    m_State = SS_Warm;
+    SetFlag(SF_SeriousStop, false);
+    return;
+#endif
     m_State = SS_Warming;
     SetFlag(SF_SeriousStop, false);
     SetFlag(SF_CoolOnStop, CoolOnStop);
@@ -457,6 +473,15 @@ inline void GCAudioStreaming::StereoAudioStream::ReadHeader(
  */
 void GCAudioStreaming::StereoAudioStream::Warm(bool CoolOnStop)
 {
+#ifdef TARGET_VITA
+    // ponytail: DSP/stream Warm crashes Vita3K host after nlReadAsync end-ptr
+    // fix (audio path finally runs). Mute streams day-1 like Rinne/pmvita;
+    // restore when sndStream* is stubbed or real.
+    (void)CoolOnStop;
+    m_State = SS_Warm;
+    m_Flags &= ~(1 << SF_SeriousStop);
+    return;
+#endif
     m_State = SS_Warming;
     m_Flags &= ~(1 << SF_SeriousStop);
     m_Flags = (m_Flags & ~(1 << SF_CoolOnStop)) | ((unsigned long)CoolOnStop << SF_CoolOnStop);

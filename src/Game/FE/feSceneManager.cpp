@@ -6,6 +6,10 @@
 #include "NL/nlDebug.h"
 #include "NL/nlString.h"
 
+#ifdef TARGET_VITA
+#include <psp2/io/fcntl.h>
+#endif
+
 extern FEInput* g_pFEInput;
 
 template <>
@@ -259,6 +263,19 @@ void FESceneManager::LoadScene(
     const char* szFilename,
     BaseSceneHandler* pHandler)
 {
+#ifdef TARGET_VITA
+    {
+        const int fd = sceIoOpen("ux0:data/smstrikers/_vita_status.txt", SCE_O_WRONLY | SCE_O_CREAT | SCE_O_APPEND, 0666);
+        if (fd >= 0)
+        {
+            sceIoWrite(fd, "load:", 5);
+            if (szFilename)
+                sceIoWrite(fd, szFilename, (int)nlStrLen(szFilename));
+            sceIoWrite(fd, "\n", 1);
+            sceIoClose(fd);
+        }
+    }
+#endif
     FESceneManager* pSceneManager = FESceneManager::Instance();
     FEScene* pFEScene = new (nlMalloc(0x70, 8, false)) FEScene();
     pFEScene->m_uHashID = nlStringLowerHash(szFilename);
@@ -300,6 +317,22 @@ void FESceneManager::ProcessPushPopQueue()
         }
         else
         {
+            if (pPackagePushPopMessage->m_pSceneHandler == NULL
+                || pPackagePushPopMessage->m_pSceneHandler->m_pFEScene == NULL)
+            {
+#ifdef TARGET_VITA
+                const int fd = sceIoOpen("ux0:data/smstrikers/_vita_status.txt", SCE_O_WRONLY | SCE_O_CREAT | SCE_O_APPEND, 0666);
+                if (fd >= 0)
+                {
+                    const char* msg = "pop-null\n";
+                    sceIoWrite(fd, msg, 9);
+                    sceIoClose(fd);
+                }
+#endif
+                PackagePushPopMessage::m_PushPopMessageSlotPool.Delete(pPackagePushPopMessage);
+                continue;
+            }
+
             DLListEntry<BaseSceneHandler*>* headEntry;
             DLListEntry<BaseSceneHandler*>* sceneEntry;
 

@@ -216,6 +216,17 @@ void* MemoryAllocator::Allocate(unsigned long size, unsigned int alignment, bool
             {
                 nlPrintf("Total Free Memory: %d\n", TotalFreeMemory());
                 nlPrintf("Largest Free Block: %d\n", LargestFreeBlock());
+#ifdef TARGET_VITA
+                // TEMPORARY boot instrumentation.
+                nlPrintf("OOM! requestSize=%lu alignment=%u\n", size, alignment);
+                {
+                    char buf[128];
+                    extern int nlSNPrintf(char*, unsigned long, const char*, ...);
+                    nlSNPrintf(buf, sizeof(buf), "size=%lu align=%u", (unsigned long)size, (unsigned int)alignment);
+                    extern void vita_fs_trace(const char*, const char*);
+                    vita_fs_trace("OOM", buf);
+                }
+#endif
                 nlBreak();
             }
         } while (true);

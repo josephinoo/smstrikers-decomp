@@ -3,6 +3,7 @@
 #include "Game/FE/feInput.h"
 #include "Game/GameSceneManager.h"
 #include "NL/gl/glPlat.h"
+#include "NL/nlPrint.h"
 #include "dolphin/os/OSRtc.h"
 #include "Game/main.h"
 
@@ -54,9 +55,6 @@ ProgressiveScanScene::~ProgressiveScanScene()
     delete mUseProgressiveImage[1];
     delete mConfirmationImage;
 }
-
-extern unsigned long nlStringLowerHash(const char*);
-extern int nlSNPrintf(char*, unsigned long, const char*, ...);
 
 /**
  * Offset/Address/Size: 0xD08 | 0x801111D8 | size: 0x374

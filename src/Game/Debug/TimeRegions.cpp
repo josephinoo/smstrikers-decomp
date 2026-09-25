@@ -8,8 +8,10 @@
 #include "Game/Debug/FrameCounter.h"
 #include "NL/nlPrint.h"
 
+#ifdef __MWERKS__
 template <>
 cBaseCamera* nlDLRingGetStart<cBaseCamera>(cBaseCamera*);
+#endif
 
 TimeRegion* pGamePlayTimeRegion;
 TimeRegion* pNISTimeRegion;

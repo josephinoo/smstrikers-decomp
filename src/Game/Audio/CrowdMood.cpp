@@ -14,7 +14,11 @@
 extern GCAudioStreaming::AudioBufferMgr g_BufferMgr;
 static void ___blank(const char*, ...);
 static void UpdateTiming(float);
+#ifndef TARGET_VITA
 extern "C" void sndStreamMixParameterEx(unsigned long stid, unsigned char vol, unsigned char pan, unsigned char span, unsigned char auxa, unsigned char auxb);
+#else
+extern "C" void sndStreamMixParameterEx(u32 stid, u8 vol, u8 pan, u8 span, u8 auxa, u8 auxb);
+#endif
 
 class SoundStrToIDNode;
 class AudioLoader

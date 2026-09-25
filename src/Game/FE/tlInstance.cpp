@@ -8,6 +8,12 @@
  */
 void TLInstance::SetAssetColour(const nlColour& color)
 {
+    // Vita: CrossFader/FE anim can call through a null target (fen find miss).
+    // Colour lives at this+0x6d — null this → Invalid write @0x6d.
+    if (this == nullptr)
+    {
+        return;
+    }
     m_overloadFlags |= 0x10;
     m_overloadedAttributes.colour = color;
 }

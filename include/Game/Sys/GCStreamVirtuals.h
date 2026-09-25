@@ -2,6 +2,7 @@
 #define _GCSTREAMVIRTUALS_H_
 
 #include "Game/Sys/GCStream.h"
+#include "NL/nlMemory.h"
 
 inline void GCAudioStreaming::StereoAudioStream::_InterleavedHdrReadCB(
     nlFile* pFile, void* pData, unsigned int Length, unsigned long User)

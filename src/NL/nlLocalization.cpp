@@ -2,9 +2,17 @@
 #include "NL/nlMemory.h"
 #include "NL/nlFile.h"
 #include "NL/nlPrint.h"
+#ifdef TARGET_VITA
+#include "vita_bswap.h"
+#endif
 
+#ifndef TARGET_VITA
 extern const unsigned short LocalizationTableNotFound[] = L"Localization Table Not Found";
 extern const unsigned short MissingLocString[] = L"missing loc string";
+#else
+extern const unsigned short LocalizationTableNotFound[] = { 'L','o','c','a','l','i','z','a','t','i','o','n',' ','T','a','b','l','e',' ','N','o','t',' ','F','o','u','n','d', 0 };
+extern const unsigned short MissingLocString[] = { 'm','i','s','s','i','n','g',' ','l','o','c',' ','s','t','r','i','n','g', 0 };
+#endif
 
 const unsigned long nlLocalization::LanguageId[] = {
     0x7A947B29,
@@ -61,6 +69,11 @@ unsigned char nlLocalization::Load(nlLanguage Language, bool ingameloc)
         return 0;
     }
 
+#ifdef TARGET_VITA
+    // .loc is a GameCube memory image: u32 header fields + lookup + UTF-16BE strings.
+    vita_bswap_region(&m_pFile->Version, 16, SWAP_U32);
+#endif
+
     if (memcmp(m_pFile, Thumbprint, 4) != 0 || m_pFile->Version != 1 || m_pFile->Language != LanguageId[Language])
     {
         nlFree(m_pFile);
@@ -70,6 +83,12 @@ unsigned char nlLocalization::Load(nlLanguage Language, bool ingameloc)
 
     m_LookupTable = (StringLookup*)(m_pFile + 1);
     m_FirstString = (unsigned short*)(&m_LookupTable[m_pFile->StringCount]);
+
+#ifdef TARGET_VITA
+    vita_bswap_region(m_LookupTable, m_pFile->StringCount * sizeof(StringLookup), SWAP_U32);
+    unsigned long strBytes = FileSize - (unsigned long)((char*)m_FirstString - (char*)m_pFile);
+    vita_bswap_region(m_FirstString, strBytes & ~1u, SWAP_U16);
+#endif
     return 1;
 }
 

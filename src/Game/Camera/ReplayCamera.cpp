@@ -11,19 +11,9 @@
 
 /*
  * TODO: match-only specialization, approved as a documented exception.
- *
- * Retail emits this body at the end of this TU's main .text, immediately before
- * the ReplayCamera.h getter group; a body defined in a header instead lands in
- * that header's linkonce group, which the linker then places after the getters.
- * Defining the specialization here is currently the only known way to reproduce
- * retail's byte order, but the body is a verbatim copy of the generic template
- * in NL/nlBasicString.h and eight other TUs instantiate that same overload, so
- * this duplicates shared code and contradicts retail DWARF, which attributes
- * the body to nlBasicString.h.
- *
- * Replace this with a form that keeps the definition in nlBasicString.h as soon
- * as one is found. See smstrikers-notes docs/0047.
+ * ... (kept for GC matching; Vita/GCC use the header generic).
  */
+#ifdef __MWERKS__
 template <>
 BasicString<char, Detail::TempStringAllocator>& BasicString<char, Detail::TempStringAllocator>::AppendInPlace<Detail::TempStringAllocator>(const BasicString<char, Detail::TempStringAllocator>& rhs)
 {
@@ -54,6 +44,7 @@ BasicString<char, Detail::TempStringAllocator>& BasicString<char, Detail::TempSt
     insert(at, begin, rhsData != 0 ? rhsData->mData.mData + rhsData->mData.mSize - 1 : 0);
     return *this;
 }
+#endif /* __MWERKS__ */
 
 static inline float GetSideDirection(int side)
 {

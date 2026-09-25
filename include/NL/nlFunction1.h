@@ -7,7 +7,7 @@
 #define _NLFUNCTION_PRIMARY_DEFINED_
 
 #define NLF_GENERATE_PRIMARY_WRAPPER
-#include "NL/detail/nlFunction1PreProcTemplate.h"
+#include "NL/detail/nlFunctionPreProcTemplate.h"
 #undef NLF_GENERATE_PRIMARY_WRAPPER
 
 #endif // _NLFUNCTION_PRIMARY_DEFINED_
@@ -24,7 +24,7 @@
 #define NLF_COMMA_PARAMETER_DECLARATIONS , P1 p0
 #define NLF_COMMA_ARGUMENT_NAMES , p0
 #define NLF_ARITY 1
-#include "NL/detail/nlFunction1PreProcTemplate.h"
+#include "NL/detail/nlFunctionPreProcTemplate.h"
 #undef NLF_ARITY
 #undef NLF_COMMA_ARGUMENT_NAMES
 #undef NLF_COMMA_PARAMETER_DECLARATIONS

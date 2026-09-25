@@ -288,7 +288,7 @@ void OverlayManager::SetVisible(SceneList scene, bool visibility, bool overrideS
 /**
  * Offset/Address/Size: 0xCC | 0x800C7EF8 | size: 0xDC
  */
-void OverlayManager::HandleStateTransition(unsigned long to, unsigned long param_2)
+void OverlayManager::HandleStateTransition(u32 to, u32 param_2)
 {
     for (u32 i = 0; i < mCurrentStackDepth; i++)
     {

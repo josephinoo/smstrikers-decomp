@@ -1,0 +1,360 @@
+  479  __aeabi_unwind_cpp_pr1
+  301  vtable for __cxxabiv1::__si_class_type_info
+  253  vtable for __cxxabiv1::__class_type_info
+  218  __gxx_personality_v0
+  203  __cxa_end_cleanup
+  181  operator delete(void*, unsigned int)
+   69  __aeabi_unwind_cpp_pr0
+   67  memcpy
+   55  memset
+   40  __aeabi_atexit
+   40  __dso_handle
+   38  nlPrintf(char const*, ...)
+   35  strcmp
+   31  atof
+   24  __cxa_guard_acquire
+   24  __cxa_guard_release
+   24  __cxa_throw_bad_array_new_length
+   21  __cxa_guard_abort
+   20  __aeabi_idivmod
+   20  nlMatrix4::SetIdentity()
+   18  nlMultMatrices(nlMatrix4&, nlMatrix4 const&, nlMatrix4 const&)
+   16  __float_max
+   15  cPadManager::GetPad(int)
+   15  nlMakeRotationMatrixZ(nlMatrix4&, float)
+   13  nlMultPosVectorMatrix(nlVector3&, nlVector3 const&, nlMatrix4 const&)
+   11  cGlobalPad::JustPressed(int, bool)
+   10  nlServiceFileSystem()
+   10  nlOpen(char const*)
+    9  strstr
+    8  vtable for __cxxabiv1::__vmi_class_type_info
+    7  __aeabi_uidivmod
+    6  qsort
+    6  fwrite
+    6  atoi
+    6  glx_GetTex(unsigned long, bool, bool)
+    6  Detail::LexicalCastImpl<BasicString<unsigned short, Detail::TempStringAllocator>, unsigned short [16]>::Do(unsigned short const (&) [16])
+    6  nlMakeRotationMatrixX(nlMatrix4&, float)
+    6  sndStreamMixParameterEx
+    5  fopen
+    5  nlQuatToMatrix(nlMatrix4&, nlQuaternion const&)
+    5  nlReadAsync(nlFile*, void*, unsigned int, void (*)(nlFile*, void*, unsigned int, unsigned long), unsigned long)
+    5  OSGetTime
+    5  OSYieldThread
+    5  nlMultDirVectorMatrix(nlVector3&, nlVector3 const&, nlMatrix4 const&)
+    5  __aeabi_idiv
+    5  PlatTexture::Prepare()
+    5  sndStreamDeactivate
+    4  strchr
+    4  strlen
+    4  dlGetStruct(unsigned long)
+    4  glx_AddTex(unsigned long, PlatTexture*)
+    4  glx_CreatePlatTexture()
+    4  OSReport
+    4  fprintf
+    4  fputc
+    4  fclose
+    4  nlMakeScaleMatrix(nlMatrix4&, float, float, float)
+    4  Detail::LexicalCastImpl<BasicString<unsigned short, Detail::TempStringAllocator>, unsigned short [32]>::Do(unsigned short const (&) [32])
+    3  nlLoadEntireFileToVirtualMemory(char const*, int*, unsigned int, void*, eAllocType)
+    3  OSGetConsoleType
+    3  VIFlush
+    3  VISetBlack
+    3  VIWaitForRetrace
+    3  cPadManager::m_pRemapArray
+    3  cPlatPad::m_bDisableRumble
+    3  nlMakeRotationMatrixY(nlMatrix4&, float)
+    3  operator delete[](void*, unsigned int)
+    3  glxSwapSetBlack(bool)
+    3  printf
+    3  memmove
+    3  nlSeek(nlFile*, unsigned int, unsigned long)
+    3  __float_nan
+    3  sqrt
+    3  __aeabi_uidiv
+    3  nlInvertMatrix(nlMatrix4&, nlMatrix4 const&)
+    3  nlMatrixToQuat(nlQuaternion&, nlMatrix4 const&)
+    3  nlQuatSlerp(nlQuaternion&, nlQuaternion const&, nlQuaternion const&, float)
+    3  nlAsyncReadsPending(nlFile*)
+    3  GXFlush
+    3  GCTextureSize(eGXTextureFormat, int, int, int, unsigned long)
+    3  sndStreamActivate
+    2  DVDGetCurrentDiskID
+    2  OSGetLanguage
+    2  OSGetTick
+    2  glx_SetLoadCallback(unsigned long (*)(unsigned long))
+    2  nlMultQuat(nlQuaternion&, nlQuaternion const&, nlQuaternion const&)
+    2  __aeabi_ldivmod
+    2  _ctype_
+    2  glx_SetFog(int)
+    2  vtable for cGlobalPad
+    2  PlatTexture::Create(int, int, eGXTextureFormat, int, bool, bool)
+    2  GetButtonIndex(int)
+    2  glxSwapLoading(bool, bool)
+    2  malloc
+    2  puts
+    2  pow
+    2  cosf
+    2  sinf
+    2  floorf
+    2  atan2f
+    2  nlTransposeMatrix(nlMatrix4&, nlMatrix4 const&)
+    2  nlMultVectorMatrix(nlVector2&, nlVector2 const&, nlMatrix3 const&)
+    2  glplatFrameAlloc(unsigned long, eGLMemory)
+    2  glplatResourceMark()
+    2  glplatResourceAlloc(unsigned long, eGLMemory)
+    2  glplatResourceRelease(unsigned long long)
+    2  DCFlushRange
+    2  glxGetDisplayedBuffer()
+    2  GXCopyDisp
+    2  GXDrawDone
+    2  GXPokeARGB
+    2  GXPokeBlendMode
+    2  GXPokeColorUpdate
+    2  VISetNextFrameBuffer
+    2  cGlobalPad::JustReleased(int, bool)
+    2  PlatTexture::CreateWithMemory(int, int, eGXTextureFormat, int, void const*)
+    2  Detail::LexicalCastImpl<BasicString<unsigned short, Detail::TempStringAllocator>, unsigned short [8]>::Do(unsigned short const (&) [8])
+    2  PlatAudio::IsEntireSampleFileInMem()
+    2  CARDProbeEx
+    2  strcasecmp
+    2  OSSetErrorHandler
+    2  nlCancelPendingAsyncReads(nlFile*, void (*)(nlFile*, void*, unsigned int, unsigned long, void (*)(nlFile*, void*, unsigned int, unsigned long)))
+    2  OSDisableInterrupts
+    2  OSRestoreInterrupts
+    2  GCAudioStreaming::MonoAudioStream::~MonoAudioStream()
+    2  sndStreamLPFParameter
+    2  PlatAudio::InitEmitter(unsigned long)
+    2  PlatAudio::SetSFXVolume(unsigned long, float)
+    2  PlatAudio::RemoveEmitter(unsigned long)
+    2  PlatAudio::SetOutputMode(MusyXOutputType)
+    2  PlatAudio::gUsingDolbyProLogic2
+    2  PPCSync
+    2  _impure_ptr
+    2  abort
+    1  VBlankPadUpdate()
+    1  nlRegHandleDVDMessageCB(Function<void (int)> const&)
+    1  nlRegHandleDVDAllClearCB(Function<void (int)> const&)
+    1  nlRegCheckForResetFromFSCB(Function<void ()> const&)
+    1  CARDInit
+    1  OSClearStack
+    1  PADSetSamplingCallback
+    1  SISetSamplingRate
+    1  glx_GetScaledXFBWidth()
+    1  nlAsyncLoadFileToVirtualMemory(nlFile*, int, void*, void (*)(nlFile*, void*, unsigned int, unsigned long), unsigned long)
+    1  sscanf
+    1  void RenderSnapshot::Replay<LoadFrame>(LoadFrame&)
+    1  void RenderSnapshot::Replay<SaveFrame>(SaveFrame&)
+    1  glx_GetResetCode()
+    1  DVDGetDriveStatus
+    1  OSGetResetButtonState
+    1  OSResetSystem
+    1  UpdatePlatPad(float)
+    1  UseDefaultPad()
+    1  UseFixedUpdatePad()
+    1  cPadManager::Update(float)
+    1  TMAnimController::TMAnimController(char const*, World*)
+    1  SkinnedAnimController::CreateGLSkinMesh(glModel*)
+    1  SkinnedAnimController::SkinnedAnimController(char const*, World*)
+    1  OSTicksToCalendarTime
+    1  InitPlatPad()
+    1  cPadManager::m_aPads
+    1  vtable for cPlatPad
+    1  PlatTexture::Swizzle(bool)
+    1  nlAssertFail(char const*, char const*, int, bool)
+    1  cFuzzyDebugger::ClearAllTrees()
+    1  cFuzzyDebugger::WriteXML()
+    1  cGlobalPad::Update(float)
+    1  typeinfo for cGlobalPad
+    1  glx_SetPal50Mode()
+    1  PrintAvailableARAMMemory()
+    1  OSGetProgressiveMode
+    1  VIGetDTVStatus
+    1  VIGetTvFormat
+    1  free
+    1  realloc
+    1  exit
+    1  longjmp
+    1  setjmp
+    1  vsprintf
+    1  gettimeofday
+    1  frexpf
+    1  ldexp
+    1  nlQuatScale(nlQuaternion&, nlQuaternion const&, float)
+    1  nlQuatDot(nlQuaternion const&, nlQuaternion const&)
+    1  __OSCurrHeap
+    1  DVDInit
+    1  OSAllocFromHeap
+    1  OSCreateHeap
+    1  OSGetArenaHi
+    1  OSGetArenaLo
+    1  OSInitAlloc
+    1  OSSetArenaLo
+    1  OSSetCurrentHeap
+    1  PADInit
+    1  VIInit
+    1  VMAlloc
+    1  VMInit
+    1  nlFlushFileCash()
+    1  wcstoul
+    1  vsnprintf
+    1  glplatPreStartup()
+    1  nlInitFileSystem()
+    1  __float_huge
+    1  __fpclassifyf
+    1  powf
+    1  tanf
+    1  memcmp
+    1  fflush
+    1  fputs
+    1  DCZeroRange
+    1  nlMakeRotationMatrixZ(nlMatrix3&, float)
+    1  glplatViewProjectPoint(eGLView, nlVector3 const&, nlVector3&)
+    1  glplatTextureAdd(unsigned long, void const*, unsigned long)
+    1  glplatTextureLoad(unsigned long)
+    1  glplatTextureReplace(unsigned long, void const*, unsigned long)
+    1  glplatTextureGetWidth()
+    1  glplatTextureGetHeight()
+    1  glplatTextureGetNumBits(int)
+    1  glplatGetMatrix(unsigned long, nlMatrix4&)
+    1  glplatSetMatrix(unsigned long, nlMatrix4 const&)
+    1  glplatMatrixLookAt(nlMatrix4&, nlVector3 const&, nlVector3 const&, nlVector3 const&)
+    1  glplatMatrixPerspective(nlMatrix4&, float, float, float, float)
+    1  glplatMatrixOrthographic(nlMatrix4&, float, float)
+    1  glplatMatrixOrthographicCentered(nlMatrix4&, float, float, float, float)
+    1  glplatFinish()
+    1  glplatStartup(gl_ScreenInfo*)
+    1  glplatEndFrame()
+    1  glplatLoadModel(char const*, unsigned long*)
+    1  glplatSendFrame()
+    1  glplatAbortFrame()
+    1  glplatBeginFrame()
+    1  glplatPostStartup()
+    1  glplatEndLoadModel(void*, unsigned long, unsigned long*)
+    1  glplatBeginLoadModel(char const*, void (*)(void*, unsigned long, void*), void*)
+    1  glplatLoadTextureBundle(char const*)
+    1  glplatEndLoadTextureBundle(void*, unsigned long)
+    1  glplatBeginLoadTextureBundle(char const*, void (*)(void*, unsigned long, void*), void*)
+    1  glPlatGrabFrameBufferToTexture(unsigned long, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int)
+    1  glplatCreateFont(unsigned long, unsigned long, unsigned short const*, unsigned long)
+    1  nlMultVectorMatrix(nlVector4&, nlVector4 const&, nlMatrix4 const&)
+    1  dlMakeDisplayList(glModelPacket const*, bool)
+    1  glSetMatrix(unsigned int, nlMatrix4 const&)
+    1  nlMakeRotationMatrixEulerAngles(nlMatrix4&, float, float, float)
+    1  glx_ClearXFB(void*)
+    1  glxGetBackBuffer()
+    1  nlReadToVirtualMemory(nlFile*, void*, unsigned int, unsigned int)
+    1  Detail::LexicalCastImpl<BasicString<unsigned short, Detail::TempStringAllocator>, unsigned short [4]>::Do(unsigned short const (&) [4])
+    1  Detail::LexicalCastImpl<BasicString<char, Detail::TempStringAllocator>, char [64]>::Do(char const (&) [64])
+    1  Detail::LexicalCastImpl<BasicString<unsigned short, Detail::TempStringAllocator>, unsigned short [128]>::Do(unsigned short const (&) [128])
+    1  Detail::LexicalCastImpl<BasicString<unsigned short, Detail::TempStringAllocator>, unsigned short [2]>::Do(unsigned short const (&) [2])
+    1  glx_SetRGB60Mode()
+    1  glx_SetInterlacedMode()
+    1  glx_SetProgressiveMode()
+    1  OSGetEuRgb60Mode
+    1  OSSetEuRgb60Mode
+    1  OSSetProgressiveMode
+    1  __OSFpscrEnableBits
+    1  AIGetDMAStartAddr
+    1  AIGetDSPSampleRate
+    1  AIInitDMA
+    1  AIRegisterDMACallback
+    1  AIStartDMA
+    1  DCInvalidateRange
+    1  LCDisable
+    1  LCEnable
+    1  OSEnableInterrupts
+    1  THPAudioDecode
+    1  THPInit
+    1  THPVideoDecode
+    1  nlGetFilePosition(nlFile*)
+    1  GCAudioStreaming::MonoAudioStream::SafeToPurge()
+    1  GCAudioStreaming::MonoAudioStream::Purge()
+    1  GCAudioStreaming::StereoAudioStream::SafeToPurge()
+    1  GCAudioStreaming::StereoAudioStream::Purge()
+    1  sndStreamADPCMParameter
+    1  sndStreamAllocEx
+    1  sndStreamARAMUpdate
+    1  sndStreamFree
+    1  sndStreamFrq
+    1  CARDCheckAsync
+    1  CARDClose
+    1  CARDCreateAsync
+    1  CARDDeleteAsync
+    1  CARDFormatAsync
+    1  CARDFreeBlocks
+    1  CARDGetSerialNo
+    1  CARDGetStatus
+    1  CARDGetXferredBytes
+    1  CARDMountAsync
+    1  CARDOpen
+    1  CARDReadAsync
+    1  CARDSetStatusAsync
+    1  CARDWriteAsync
+    1  GXPeekARGB
+    1  glx_GetSharedLock()
+    1  glx_GetSharedMemory()
+    1  glx_LockSharedMemory()
+    1  glx_UnlockSharedMemory()
+    1  glx_GetSharedMemorySize()
+    1  GXInvalidateTexAll
+    1  GXSetDrawDone
+    1  GXWaitDrawDone
+    1  PlatAudio::Initialize(bool)
+    1  PlatAudio::IsSFXPlaying(unsigned long)
+    1  PlatAudio::StopAllSound()
+    1  PlatAudio::AddAuxEffectA(MusyXEffectType, void*, unsigned char)
+    1  PlatAudio::GetSFXEmitter(unsigned long)
+    1  PlatAudio::GetSndIDError()
+    1  PlatAudio::RemoveEmitter(SFXEmitter*)
+    1  PlatAudio::GetFreeEmitter(unsigned long&)
+    1  PlatAudio::Add3DSFXEmitter(EmitterStartInfo const&)
+    1  PlatAudio::IsEmitterActive(SFXEmitter*)
+    1  PlatAudio::SetSFXReverbVol(unsigned long, float)
+    1  PlatAudio::UpdateAuxEffectA(MusyXEffectType, void*)
+    1  PlatAudio::GetEmitterVoiceID(SFXEmitter*)
+    1  PlatAudio::SetPitchBendOnSFX(unsigned int, unsigned short)
+    1  PlatAudio::SetSFXVolumeGroup(unsigned int, unsigned char)
+    1  PlatAudio::SetVolGroupVolume(unsigned char, float, unsigned short)
+    1  PlatAudio::SetFilterFreqOnSFX(unsigned int, unsigned short)
+    1  PlatAudio::ShutdownAuxEffectA()
+    1  PlatAudio::Update3DSFXEmitter(SFXEmitter*, nlVector3 const&, nlVector3 const&, float)
+    1  PlatAudio::Remove3DSFXListener(SND_LISTENER*)
+    1  PlatAudio::Update3DSFXListener(SND_LISTENER*, nlVector3 const&, nlVector3 const&, nlVector3 const&, nlVector3 const&, float)
+    1  PlatAudio::SetMIDIControllerVal14Bit(unsigned int, unsigned char, unsigned short)
+    1  PlatAudio::PlaySFX(SFXStartInfo const&)
+    1  PlatAudio::StopSFX(unsigned long)
+    1  PlatAudio::Shutdown()
+    1  sndVolume
+    1  PlatAudio::ActivateDPL2()
+    1  PlatAudio::DeactivateDPL2()
+    1  PlatAudio::LoadSoundGroup(AudioFileData&, unsigned long, unsigned long, bool)
+    1  PlatAudio::Add3DSFXListener(SND_LISTENER*, nlVector3 const&, nlVector3 const&, nlVector3 const&, nlVector3 const&, float, float, float, float, bool, float)
+    1  PlatAudio::UnloadSoundGroup(AudioFileData&, unsigned long)
+    1  PlatAudio::SetupSoundBuffers(AudioFileData&, bool)
+    1  PlatAudio::UnloadAllSoundGroups(AudioFileData&)
+    1  PlatAudio::PurgeSampleFileBuffer()
+    1  PlatAudio::ReadEntireSampleFileIntoMem(char const*)
+    1  PlatAudio::UnloadAllSoundGroupsOnStack(AudioFileData&, unsigned long)
+    1  PlatAudio::ReadEntireSampleFileIntoMemSync(char const*)
+    1  ARQSetChunkSize
+    1  __cvt_fp2unsigned
+    1  Detail::LexicalCastImpl<BasicString<char, Detail::TempStringAllocator>, char [5]>::Do(char const (&) [5])
+    1  StatsGatherer::DoFunctionCall(unsigned int)
+    1  StatsGatherer::Run(float)
+    1  StatsGatherer::GetName()
+    1  non-virtual thunk to StatsGatherer::Run(float)
+    1  non-virtual thunk to StatsGatherer::GetName()
+    1  __construct_new_array
+    1  glx_MakeSkinMesh(nlChunk*, glModel*)
+    1  DCStoreRangeNoSync
+    1  PSMTXConcat
+    1  DCFlushRangeNoSync
+    1  __float_min
+    1  OSGetSoundMode
+    1  OSSetSoundMode
+    1  fgets
+    1  CARDUnmount
+    1  glSetIgnoreDuplicateModels(bool)
+    1  ceil
+    1  floor

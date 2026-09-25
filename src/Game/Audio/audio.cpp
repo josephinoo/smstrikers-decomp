@@ -1,4 +1,25 @@
 #include "Game/Sys/audio.h"
+#include "NL/nlLexicalCast.h"
+
+#ifdef __MWERKS__
+template <>
+bool LexicalCast<bool, bool>(const bool& value);
+template <>
+bool LexicalCast<bool, int>(const int& value);
+template <>
+bool LexicalCast<bool, float>(const float& value);
+template <>
+bool LexicalCast<bool, const char*>(const char* const& value);
+template <>
+float LexicalCast<float, bool>(const bool& value);
+template <>
+float LexicalCast<float, int>(const int& value);
+template <>
+float LexicalCast<float, float>(const float& value);
+template <>
+float LexicalCast<float, const char*>(const char* const& value);
+#endif
+
 #include "Game/Sys/GCStream.h"
 #include "Game/Sys/debug.h"
 #include "Game/Game.h"
@@ -19,23 +40,6 @@
 // Include PlatStream.h after plataudio.h to get the PlatAudio class
 // The namespace PlatAudio and class PlatAudio can coexist
 #include "Game/Sys/PlatStream.h"
-
-template <>
-bool LexicalCast<bool, bool>(const bool& value);
-template <>
-bool LexicalCast<bool, int>(const int& value);
-template <>
-bool LexicalCast<bool, float>(const float& value);
-template <>
-bool LexicalCast<bool, const char*>(const char* const& value);
-template <>
-float LexicalCast<float, bool>(const bool& value);
-template <>
-float LexicalCast<float, int>(const int& value);
-template <>
-float LexicalCast<float, float>(const float& value);
-template <>
-float LexicalCast<float, const char*>(const char* const& value);
 
 enum FadeType
 {
@@ -2212,7 +2216,11 @@ static inline void Update3DSFXListenerPos();
 /**
  * Offset/Address/Size: 0x1FD0 | 0x8013E4E4 | size: 0x354
  */
+#if defined(TARGET_VITA) || defined(TARGET_PC)
+void Update(float fDeltaT)
+#else
 void Audio::Update(float fDeltaT)
+#endif
 {
     if (::g_bAudioInitialized == false)
     {
@@ -2876,7 +2884,11 @@ void SetVolGroupVolume(int volGroup, float fVol, int fadeTime)
 /**
  * Offset/Address/Size: 0x1028 | 0x8013D53C | size: 0xE0
  */
+#if defined(TARGET_VITA) || defined(TARGET_PC)
+void ActivateFilterOnAllCurrentSFX(bool bOn)
+#else
 void Audio::ActivateFilterOnAllCurrentSFX(bool bOn)
+#endif
 {
     gWorldSFX.ActivateFilterOnAllTrackedSFX(bOn);
     gPowerupSFX.ActivateFilterOnAllTrackedSFX(bOn);
@@ -2935,7 +2947,11 @@ static void SetFilterFreqOnAllCurrentSFX(unsigned short freq)
 /**
  * Offset/Address/Size: 0xF6C | 0x8013D480 | size: 0xBC
  */
+#if defined(TARGET_VITA) || defined(TARGET_PC)
+void SetPitchBendOnAllDialogueSFX(unsigned short pitch)
+#else
 void Audio::SetPitchBendOnAllDialogueSFX(unsigned short pitch)
+#endif
 {
     if (pitch > 0x3FFF)
     {

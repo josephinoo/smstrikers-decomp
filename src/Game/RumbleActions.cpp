@@ -79,6 +79,7 @@ void UpdateRumbleActions(float dt)
                 break;
 
             case 1: // Delay
+            {
                 pad->StopRumble();
                 int nextOp = state->current;
                 u32 delayValue = state->ops[nextOp].value;
@@ -92,6 +93,7 @@ void UpdateRumbleActions(float dt)
                     state->current++;
                 }
                 break;
+            }
 
             case 2: // Stop rumble
                 pad->StopRumble();

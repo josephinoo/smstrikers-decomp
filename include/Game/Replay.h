@@ -197,6 +197,14 @@ inline void SaveFrame::Replayable(T& current, NotReplayablePod)
 template <int N, typename FrameType, typename T>
 void Replayable(FrameType& frame, T& current);
 
+/* Vita/GCC: polymorphic Replayable used by Save/LoadFrame (MW had richer overloads). */
+template <int N, typename FrameType, typename T>
+inline void Replayable(FrameType& frame, char /*typeId*/, T*& current)
+{
+    if (current != 0)
+        Replayable<N>(frame, *current);
+}
+
 #include "Game/LoadFrame.h"
 
 template <int N, typename T>

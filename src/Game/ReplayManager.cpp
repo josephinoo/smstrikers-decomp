@@ -14,6 +14,7 @@ extern float g_fSimulationTick;
 extern float g_fFixedUpdateTick;
 extern bool g_bEnableGamecubePadMonkey;
 
+#ifdef __MWERKS__
 template <>
 bool LexicalCast<bool, bool>(const bool& value);
 template <>
@@ -22,6 +23,7 @@ template <>
 bool LexicalCast<bool, float>(const float& value);
 template <>
 bool LexicalCast<bool, const char*>(const char* const& value);
+#endif
 
 static f32 CANT_COLLIDE = HUGE_VALF;
 

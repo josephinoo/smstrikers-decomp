@@ -11,6 +11,11 @@
 #include "Game/SH/SHMainMenu.h"
 #include "Game/main.h"
 
+#ifdef TARGET_VITA
+#include <psp2/io/fcntl.h>
+static int s_vita_title_frames;
+#endif
+
 /**
  * Offset/Address/Size: 0x9F8 | 0x800ACFB4 | size: 0xA8
  */
@@ -85,6 +90,9 @@ void TitleScene::SceneCreated()
     mTextPressStart = FEFinder<TLTextInstance, 3>::Find<TLSlide>(
         comp->GetActiveSlide(),
         InlineHasher(nlStringLowerHash("Text")));
+#ifdef TARGET_VITA
+    s_vita_title_frames = 0;
+#endif
 }
 
 /**
@@ -97,14 +105,17 @@ void TitleScene::Update(float dt)
     m_fTimeElapsed += dt;
     if (m_fTimeElapsed < 1.0f)
     {
-        mTextPressStart->m_bVisible = false;
+        if (mTextPressStart != NULL)
+            mTextPressStart->m_bVisible = false;
         return;
     }
 
-    mTextPressStart->m_bVisible = true;
+    if (mTextPressStart != NULL)
+        mTextPressStart->m_bVisible = true;
     if (mStartedDemo)
     {
-        mTextPressStart->m_bVisible = false;
+        if (mTextPressStart != NULL)
+            mTextPressStart->m_bVisible = false;
         return;
     }
 
@@ -194,12 +205,55 @@ void TitleScene::Update(float dt)
     }
 
     if (g_pFEInput->JustPressed(FE_ALL_PADS, 0x24, true, NULL)
-        || g_pFEInput->JustPressed(FE_ALL_PADS, 0x100, false, NULL))
+        || g_pFEInput->JustPressed(FE_ALL_PADS, 0x100, false, NULL)
+#ifdef TARGET_VITA
+        // Cold Vita3K: ~1.5 presents/s. Advance after ~45 Updates (~30s wall).
+        || (++s_vita_title_frames >= 45)
+#endif
+    )
     {
+#ifdef TARGET_VITA
+        {
+            const int fd = sceIoOpen("ux0:data/smstrikers/_vita_status.txt", SCE_O_WRONLY | SCE_O_CREAT | SCE_O_APPEND, 0666);
+            if (fd >= 0)
+            {
+                const char* msg = "title-start\n";
+                sceIoWrite(fd, msg, 12);
+                sceIoClose(fd);
+            }
+        }
+#endif
         FEAudio::PlayAnimAudioEvent("sfx_accept", false);
+#ifdef TARGET_VITA
+        {
+            const int fd = sceIoOpen("ux0:data/smstrikers/_vita_status.txt", SCE_O_WRONLY | SCE_O_CREAT | SCE_O_APPEND, 0666);
+            if (fd >= 0)
+            {
+                const char* msg = "title-audio\n";
+                sceIoWrite(fd, msg, 12);
+                sceIoClose(fd);
+            }
+        }
+#endif
         nlSingleton<GameSceneManager>::Instance()->Push(SCENE_MAIN_MENU, SCREEN_FORWARD, true);
+#ifdef TARGET_VITA
+        {
+            const int fd = sceIoOpen("ux0:data/smstrikers/_vita_status.txt", SCE_O_WRONLY | SCE_O_CREAT | SCE_O_APPEND, 0666);
+            if (fd >= 0)
+            {
+                const char* msg = "title-pushed\n";
+                sceIoWrite(fd, msg, 13);
+                sceIoClose(fd);
+            }
+        }
+#endif
 
+#ifdef TARGET_VITA
+        // Skip slide-in: first-frame menu at t=0 is off-screen; pad is flaky.
+        SHMainMenu::mSnapMenuIntoPosition = true;
+#else
         SHMainMenu::mSnapMenuIntoPosition = false;
+#endif
         SHMainMenu::mLastMenuItem = 0;
 
         nlSingleton<GameInfoManager>::Instance()->mUserInfo.mGameplayOptions.OnSettingsUpdated();

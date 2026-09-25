@@ -13,6 +13,10 @@
 #endif
 #include "NL/nlPrint.h"
 
+#ifdef TARGET_VITA
+#include <psp2/io/fcntl.h>
+#endif
+
 #if defined(VERSION_G4QJ01)
 #endif
 
@@ -71,6 +75,28 @@ void ChooseCaptainsSceneV2::SceneCreated()
     BindChooseSideInstances();
     CreateTicker();
     ChangeSceneType(mDesiredSceneType);
+#ifdef TARGET_VITA
+    {
+        // Skip captains/sides UI — go load a match (Stadium 0 / Mario vs DK defaults already set).
+        const int fd = sceIoOpen("ux0:data/smstrikers/_vita_status.txt", SCE_O_WRONLY | SCE_O_CREAT | SCE_O_APPEND, 0666);
+        if (fd >= 0)
+        {
+            const char* msg = "captains-skip\n";
+            sceIoWrite(fd, msg, 14);
+            sceIoClose(fd);
+        }
+        GameInfoManager* gim = nlSingleton<GameInfoManager>::Instance();
+        if (gim != NULL)
+        {
+            if (gim->GetTeam(0) == TEAM_INVALID)
+                gim->SetTeam(0, TEAM_MARIO);
+            if (gim->GetTeam(1) == TEAM_INVALID)
+                gim->SetTeam(1, TEAM_DONKEYKONG);
+            gim->SetStadium((eStadiumID)0);
+        }
+        mMoveForwardFrameDelay = 3;
+    }
+#endif
 }
 
 /**
@@ -100,16 +126,21 @@ void ChooseCaptainsSceneV2::ResetForCHOOSECAPTAINS()
         InlineHasher(nlStringLowerHash("Layer")),
         InlineHasher(nlStringLowerHash("CHOOSE_SIDE")));
 
-    compinstance->m_bVisible = false;
-    mTicker->SetDisplayMessage((unsigned long)0x4B67A61F);
+    if (compinstance != NULL)
+        compinstance->m_bVisible = false;
+    if (mTicker != NULL)
+        mTicker->SetDisplayMessage((unsigned long)0x4B67A61F);
 
     compinstance = FEFinder<TLComponentInstance, 4>::Find<TLSlide>(
         m_pFEPresentation->m_currentSlide,
         InlineHasher(nlStringLowerHash("Layer")),
         InlineHasher(nlStringLowerHash("buttons")));
 
-    mButtons.mButtonInstance = compinstance;
-    mButtons.SetState(ButtonComponent::BS_A_AND_B);
+    if (compinstance != NULL)
+    {
+        mButtons.mButtonInstance = compinstance;
+        mButtons.SetState(ButtonComponent::BS_A_AND_B);
+    }
 
     mChooseCaptain.MoveHighlightToCurrentCaptain(0);
     mChooseCaptain.SetupNameComponentToCurrentCaptain(0);
@@ -131,9 +162,11 @@ void ChooseCaptainsSceneV2::ResetForCHOOSESIDES()
         InlineHasher(nlStringLowerHash("Layer")),
         InlineHasher(nlStringLowerHash("CHOOSE_SIDE")));
 
-    compinstance->m_bVisible = true;
+    if (compinstance != NULL)
+        compinstance->m_bVisible = true;
 
-    mTicker->SetDisplayMessage((unsigned long)0x53B23764);
+    if (mTicker != NULL)
+        mTicker->SetDisplayMessage((unsigned long)0x53B23764);
 
     if (!nlSingleton<GameInfoManager>::Instance()->mIsInStrikers101Mode && !g_e3_Build)
     {
@@ -142,9 +175,12 @@ void ChooseCaptainsSceneV2::ResetForCHOOSESIDES()
             InlineHasher(nlStringLowerHash("Layer")),
             InlineHasher(nlStringLowerHash("buttons")));
 
-        compinstance->m_bVisible = false;
-        mButtons.mButtonInstance = compinstance;
-        mButtons.SetState(ButtonComponent::BS_A_AND_B_AND_Y);
+        if (compinstance != NULL)
+        {
+            compinstance->m_bVisible = false;
+            mButtons.mButtonInstance = compinstance;
+            mButtons.SetState(ButtonComponent::BS_A_AND_B_AND_Y);
+        }
     }
 }
 
@@ -164,6 +200,23 @@ void ChooseCaptainsSceneV2::Update(float fDeltaT)
         mMoveForwardFrameDelay--;
         if (mMoveForwardFrameDelay != 0)
             return;
+#ifdef TARGET_VITA
+        {
+            const int fd = sceIoOpen("ux0:data/smstrikers/_vita_status.txt", SCE_O_WRONLY | SCE_O_CREAT | SCE_O_APPEND, 0666);
+            if (fd >= 0)
+            {
+                const char* msg = "loading-match\n";
+                sceIoWrite(fd, msg, 14);
+                sceIoClose(fd);
+            }
+            nlSingleton<GameInfoManager>::Instance()->SetStadium((eStadiumID)0);
+            nlSingleton<GameSceneManager>::Instance()->PushLoadingScene(true);
+            mChooseSide.SaveChanges();
+            FrontEnd::SetControllerState();
+            mMoveForwardFrameDelay = -1;
+            return;
+        }
+#endif
         if (nlSingleton<GameInfoManager>::Instance()->mIsInStrikers101Mode)
         {
             nlSingleton<GameSceneManager>::Instance()->PushLoadingScene(true);

@@ -106,7 +106,7 @@ void TLTextInstance::Render(eGLView view, const nlColour& colour) const
         return;
     }
 
-    float x;
+    float x = 0.0f;
     switch (m_DrawOptions & 0xF)
     {
     case 0:
@@ -122,9 +122,12 @@ void TLTextInstance::Render(eGLView view, const nlColour& colour) const
     case 2:
         x = -m_OverloadedAttributes.BoxSize.x;
         break;
+    default:
+        x = 0.0f;
+        break;
     }
 
-    float y;
+    float y = 0.0f;
     switch (m_DrawOptions & 0xF0)
     {
     case 0:
@@ -139,6 +142,10 @@ void TLTextInstance::Render(eGLView view, const nlColour& colour) const
     }
     case 0x20:
         y = m_OverloadedAttributes.BoxSize.y;
+        break;
+    default:
+        // ponytail: unknown valign bits used to leave y uninitialized (saw ~9e6 on Vita)
+        y = 0.0f;
         break;
     }
 

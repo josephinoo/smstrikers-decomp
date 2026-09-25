@@ -39,6 +39,9 @@ enum eFELibObjectType
     FEOT_OBJECT_TYPE_ANY = -2147483648,
 };
 
+// colour sits at 0x31 in the fen (tight against bVisible). Without pack(1)
+// it would align to 0x34 and every later TLInstance field would drift.
+#pragma pack(push, 1)
 struct FELibObjectAttributes
 {
     /* 0x00 */ feVector3 v3Position; // offset 0x0, size 0xC
@@ -47,7 +50,9 @@ struct FELibObjectAttributes
     /* 0x24 */ feVector3 v3Pivot;    // offset 0x24, size 0xC
     /* 0x30 */ bool bVisible;        // offset 0x30, size 0x1
     /* 0x31 */ nlColour colour;      // offset 0x31, size 0x4
+    /* 0x35 */ unsigned char _pad[3];
 }; // total size: 0x38
+#pragma pack(pop)
 
 class FELibObject
 {

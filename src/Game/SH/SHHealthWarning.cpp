@@ -157,7 +157,9 @@ void HealthWarningSceneV2::Update(float fDeltaT)
         proceed = true;
     }
 
-    if (mElapsedTime >= 60.0f)
+    // Vita: H&S is a black screen with white text; waiting 60s feels "stuck black".
+    // Advance shortly after the press prompt is shown (GC used button or 60s).
+    if (mElapsedTime >= 3.0f)
     {
         proceed = true;
     }

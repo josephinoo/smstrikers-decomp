@@ -37,8 +37,7 @@ struct GLViewportUserData
     /* 0x0C */ u32 projection;
 }; // total size: 0x10
 
-#pragma push
-#pragma pack(1)
+#pragma pack(push, 1)
 struct glModelStream
 {
     /* 0x0 */ unsigned long address;
@@ -57,7 +56,7 @@ struct glModelPacket // size: 0x4A
     /* 0x10 */ glStateBundle state;
     /* 0x46 */ u32 materialset;
 }; // total size: 0x4A
-#pragma pop
+#pragma pack(pop)
 
 bool glUserHasType(eGLUserData type, const glModelPacket* pPacket);
 void glUserDetach(eGLUserData type, glModelPacket* pPacket);

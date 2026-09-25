@@ -36,7 +36,7 @@ MoviePlayerScene::MoviePlayerScene()
     mWithSound = false;
     mLoopMovie = false;
     mPushWithPop = true;
-    mMovieFilename[0] = nullptr;
+    mMovieFilename[0] = '\0';
     if (nlSingleton<GameSceneManager>::s_pInstance)
     {
         mGameSceneManager = nlSingleton<GameSceneManager>::s_pInstance;

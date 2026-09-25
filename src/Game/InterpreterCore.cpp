@@ -26,6 +26,38 @@ InterpreterCore::~InterpreterCore()
 void InterpreterCore::LoadByteCode(void* data)
 {
     m_Header = (ByteCodeHeader*)data;
+
+#ifdef TARGET_VITA
+    // ByteCodeHeader is Big-Endian on disk. Swap the counts.
+    // Ensure we don't double swap if LoadByteCode is called again? 
+    // The pointers at the end of the struct on disk are probably garbage, 
+    // but the counts we need are in the first 20 bytes.
+    if (m_Header->numFunctions > 0x00FFFFFF || m_Header->dataSegmentSize > 0x00FFFFFF)
+    {
+        m_Header->signature = __builtin_bswap32(m_Header->signature);
+        m_Header->numFunctions = __builtin_bswap32(m_Header->numFunctions);
+        m_Header->dataSegmentSize = __builtin_bswap32(m_Header->dataSegmentSize);
+        m_Header->codeSegmentSize = __builtin_bswap32(m_Header->codeSegmentSize);
+        m_Header->stringSegmentSize = __builtin_bswap32(m_Header->stringSegmentSize);
+
+        FunctionEntryPoint* ftable = (FunctionEntryPoint*)(m_Header + 1);
+        for (u32 i = 0; i < m_Header->numFunctions; ++i) {
+            ftable[i].hash = __builtin_bswap32(ftable[i].hash);
+            ftable[i].offset = __builtin_bswap32(ftable[i].offset);
+        }
+
+        u32* dseg = (u32*)(ftable + m_Header->numFunctions);
+        for (u32 i = 0; i < m_Header->dataSegmentSize / 4; ++i) {
+            dseg[i] = __builtin_bswap32(dseg[i]);
+        }
+
+        u16* cseg = (u16*)((u8*)dseg + m_Header->dataSegmentSize);
+        for (u32 i = 0; i < m_Header->codeSegmentSize / 2; ++i) {
+            cseg[i] = __builtin_bswap16(cseg[i]);
+        }
+    }
+#endif
+
     m_Header->m_FunctionTable = (FunctionEntryPoint*)(m_Header + 1);
     m_Header->m_DataSegment = (u32*)(m_Header->m_FunctionTable + m_Header->numFunctions);
     m_Header->m_CodeSegment = (u16*)((u8*)m_Header->m_DataSegment + m_Header->dataSegmentSize);

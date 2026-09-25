@@ -16,6 +16,10 @@
 
 #include "NL/nlBind.h"
 
+#ifdef TARGET_VITA
+#include <psp2/io/fcntl.h>
+#endif
+
 typedef Detail::MemFunImpl<void, void (SHMainMenu::*)(TLComponentInstance*)> MainMenuMemFun_t;
 typedef BindExp2<void, MainMenuMemFun_t, SHMainMenu*, Placeholder<0> > MainMenuBind_t;
 
@@ -239,10 +243,19 @@ void SHMainMenu::SceneCreated()
         InlineHasher(nlStringLowerHash("TickerText")));
 
     screenInfo = glGetScreenInfo();
-    FEScrollText* scrollTextDisplay = new (nlMalloc(sizeof(FEScrollText), 8, false)) FEScrollText(scrollText, 0, screenInfo->ScreenWidth + 50);
-    m_itemDescriptions = scrollTextDisplay;
+    // Vita: fen find can miss; don't construct FEScrollText on null.
+    if (scrollText != NULL)
+    {
+        FEScrollText* scrollTextDisplay = new (nlMalloc(sizeof(FEScrollText), 8, false)) FEScrollText(scrollText, 0, screenInfo->ScreenWidth + 50);
+        m_itemDescriptions = scrollTextDisplay;
+    }
+    else
+    {
+        m_itemDescriptions = NULL;
+    }
     scene = GetBackgroundScene();
-    scene->SetVisible(false);
+    if (scene != NULL)
+        scene->SetVisible(false);
     for (int i = 0; i < NUM_ITEMS; i++)
     {
         nlSNPrintf(menuname, 64, "MENU ITEM%d", i + 1);
@@ -250,6 +263,8 @@ void SHMainMenu::SceneCreated()
             presentation->m_currentSlide,
             InlineHasher(nlStringLowerHash("Layer")),
             InlineHasher(nlStringLowerHash(MenuNameTable[i])));
+        if (instance == NULL)
+            continue;
         TLComponentInstance* compinstance = (TLComponentInstance*)instance;
         item = mMenuItems.AddItem(compinstance);
 
@@ -290,24 +305,34 @@ void SHMainMenu::SceneCreated()
         if (i == 2)
         {
             TLComponentInstance* lockedType = item->GetType();
-            TLComponentInstance* lockedComp = FEFinder<TLComponentInstance, 4>::Find<TLSlide>(
-                lockedType->GetActiveSlide(),
-                InlineHasher(nlStringLowerHash("locked")),
-                InlineHasher(0));
-            u8 locked = item->IsLocked();
-            lockedComp->m_bVisible = (bool)locked;
+            if (lockedType != NULL && lockedType->GetActiveSlide() != NULL)
+            {
+                TLComponentInstance* lockedComp = FEFinder<TLComponentInstance, 4>::Find<TLSlide>(
+                    lockedType->GetActiveSlide(),
+                    InlineHasher(nlStringLowerHash("locked")),
+                    InlineHasher(0));
+                u8 locked = item->IsLocked();
+                if (lockedComp != NULL)
+                    lockedComp->m_bVisible = (bool)locked;
+            }
         }
     }
     mMenuItems.SetItem(mLastMenuItem);
     mMenuItems.SetFlag(1);
-    scene->SetVisible(true);
-    scene->mDesiredPlayMode = PM_STOP_AT_END;
+    if (scene != NULL)
+    {
+        scene->SetVisible(true);
+        scene->mDesiredPlayMode = PM_STOP_AT_END;
+    }
     buttons = FEFinder<TLComponentInstance, 4>::Find<TLSlide>(
         presentation->m_currentSlide,
         InlineHasher(nlStringLowerHash("Layer")),
         InlineHasher(nlStringLowerHash("buttons")));
-    mButtons.mButtonInstance = buttons;
-    mButtons.SetState(ButtonComponent::BS_A_AND_B);
+    if (buttons != NULL)
+    {
+        mButtons.mButtonInstance = buttons;
+        mButtons.SetState(ButtonComponent::BS_A_AND_B);
+    }
     if (mSnapMenuIntoPosition)
     {
         FEAudio::EnableSounds(false);
@@ -317,6 +342,17 @@ void SHMainMenu::SceneCreated()
     }
     mMenuItems.RunCallbackOnCurrent(ON_HIGHLIGHT);
     mSnapMenuIntoPosition = true;
+#ifdef TARGET_VITA
+    {
+        const int fd = sceIoOpen("ux0:data/smstrikers/_vita_status.txt", SCE_O_WRONLY | SCE_O_CREAT | SCE_O_APPEND, 0666);
+        if (fd >= 0)
+        {
+            const char* msg = "main-menu\n";
+            sceIoWrite(fd, msg, 10);
+            sceIoClose(fd);
+        }
+    }
+#endif
 }
 
 /**
@@ -324,6 +360,8 @@ void SHMainMenu::SceneCreated()
  */
 void SHMainMenu::OpenItem(TLComponentInstance* compinstance)
 {
+    if (compinstance == NULL)
+        return;
 
     compinstance->SetActiveSlide(sSlideIn);
     compinstance->Update(0.0f);
@@ -332,50 +370,66 @@ void SHMainMenu::OpenItem(TLComponentInstance* compinstance)
         compinstance->GetActiveSlide(),
         InlineHasher(nlStringLowerHash("high")));
 
-    highlight->SetActiveSlide(sSlideIn);
-    highlight->Update(0.0f);
+    if (highlight != NULL)
+    {
+        highlight->SetActiveSlide(sSlideIn);
+        highlight->Update(0.0f);
+    }
 
     TLComponentInstance* flash = FEFinder<TLComponentInstance, 4>::Find<TLSlide>(
         compinstance->GetActiveSlide(),
         InlineHasher(nlStringLowerHash("flasher")));
 
-    flash->SetActiveSlide("Slide1");
-    flash->Update(0.0f);
-
-    FEFinder<TLImageInstance, 2>::Find<TLSlide>(
-        highlight->GetActiveSlide(),
-        InlineHasher(nlStringLowerHash("may_highlite")))
-        ->SetAssetColour(mHighlightColour);
-
-    if (mMenuItems.GetMenuItem()->IsDisabled())
+    if (flash != NULL)
     {
-
-        TLTextInstance* text = FEFinder<TLTextInstance, 3>::Find<TLSlide>(
-            compinstance->GetActiveSlide(),
-            InlineHasher(nlStringLowerHash("R JUST")));
-
-        text->m_LocStrId = 0x38202C30;
-        text->m_OverloadFlags |= 8;
+        flash->SetActiveSlide("Slide1");
+        flash->Update(0.0f);
     }
 
-    if (mMenuItems.GetMenuItem()->IsLocked())
+    if (highlight != NULL && highlight->GetActiveSlide() != NULL)
+    {
+        TLImageInstance* hiImg = FEFinder<TLImageInstance, 2>::Find<TLSlide>(
+            highlight->GetActiveSlide(),
+            InlineHasher(nlStringLowerHash("may_highlite")));
+        if (hiImg != NULL)
+            hiImg->SetAssetColour(mHighlightColour);
+    }
+
+    if (mMenuItems.GetMenuItem() != NULL && mMenuItems.GetMenuItem()->IsDisabled())
     {
 
         TLTextInstance* text = FEFinder<TLTextInstance, 3>::Find<TLSlide>(
             compinstance->GetActiveSlide(),
             InlineHasher(nlStringLowerHash("R JUST")));
 
-#if defined(VERSION_G4QJ01)
-        if (g_pLocalization->m_CurrentLanguage == nlLocalization::LangJapanese)
+        if (text != NULL)
         {
-            text->m_LocStrId = 0x67452206;
+            text->m_LocStrId = 0x38202C30;
             text->m_OverloadFlags |= 8;
         }
-        else
-#endif
+    }
+
+    if (mMenuItems.GetMenuItem() != NULL && mMenuItems.GetMenuItem()->IsLocked())
+    {
+
+        TLTextInstance* text = FEFinder<TLTextInstance, 3>::Find<TLSlide>(
+            compinstance->GetActiveSlide(),
+            InlineHasher(nlStringLowerHash("R JUST")));
+
+        if (text != NULL)
         {
-            text->m_LocStrId = 0x2A68AC55;
-            text->m_OverloadFlags |= 8;
+#if defined(VERSION_G4QJ01)
+            if (g_pLocalization->m_CurrentLanguage == nlLocalization::LangJapanese)
+            {
+                text->m_LocStrId = 0x67452206;
+                text->m_OverloadFlags |= 8;
+            }
+            else
+#endif
+            {
+                text->m_LocStrId = 0x2A68AC55;
+                text->m_OverloadFlags |= 8;
+            }
         }
 
         TLComponentInstance* lockedComp = FEFinder<TLComponentInstance, 4>::Find<TLSlide>(
@@ -400,17 +454,20 @@ void SHMainMenu::OpenItem(TLComponentInstance* compinstance)
         }
     }
 
-    if (mMenuItems.GetMenuItem()->IsLocked())
+    if (m_itemDescriptions != NULL && mMenuItems.GetMenuItem() != NULL)
     {
-        m_itemDescriptions->SetDisplayMessage(sLockedTickerMessages[mMenuItems.GetActiveItemIndex()]);
-    }
-    else
-    {
-        m_itemDescriptions->SetDisplayMessage(sUnlockedTickerMessages[mMenuItems.GetActiveItemIndex()]);
+        if (mMenuItems.GetMenuItem()->IsLocked())
+        {
+            m_itemDescriptions->SetDisplayMessage(sLockedTickerMessages[mMenuItems.GetActiveItemIndex()]);
+        }
+        else
+        {
+            m_itemDescriptions->SetDisplayMessage(sUnlockedTickerMessages[mMenuItems.GetActiveItemIndex()]);
+        }
     }
 
     BaseSceneHandler* scene = nlSingleton<GameSceneManager>::Instance()->GetScene(SCENE_MARIO_BACKGROUND);
-    if (scene->m_bVisible)
+    if (scene != NULL && scene->m_bVisible)
     {
         FEAudio::PlayAnimAudioEvent("sfx_main_menu_highlight_open", false);
     }
@@ -421,6 +478,8 @@ void SHMainMenu::OpenItem(TLComponentInstance* compinstance)
  */
 void SHMainMenu::CloseItem(TLComponentInstance* compinstance)
 {
+    if (compinstance == NULL)
+        return;
 
     compinstance->SetActiveSlide(sSlideOut);
     compinstance->Update(0.0f);
@@ -429,16 +488,22 @@ void SHMainMenu::CloseItem(TLComponentInstance* compinstance)
         compinstance->GetActiveSlide(),
         InlineHasher(nlStringLowerHash("high")));
 
-    highlight->SetActiveSlide(sSlideOut);
-    highlight->Update(0.0f);
-
-    FEFinder<TLImageInstance, 2>::Find<TLSlide>(
-        highlight->GetActiveSlide(),
-        InlineHasher(nlStringLowerHash("may_highlite")))
-        ->SetAssetColour(mHighlightColour);
+    if (highlight != NULL)
+    {
+        highlight->SetActiveSlide(sSlideOut);
+        highlight->Update(0.0f);
+        if (highlight->GetActiveSlide() != NULL)
+        {
+            TLImageInstance* hiImg = FEFinder<TLImageInstance, 2>::Find<TLSlide>(
+                highlight->GetActiveSlide(),
+                InlineHasher(nlStringLowerHash("may_highlite")));
+            if (hiImg != NULL)
+                hiImg->SetAssetColour(mHighlightColour);
+        }
+    }
 
     BaseSceneHandler* scene = nlSingleton<GameSceneManager>::Instance()->GetScene(SCENE_MARIO_BACKGROUND);
-    if (scene->m_bVisible)
+    if (scene != NULL && scene->m_bVisible)
     {
         Audio::gWorldSFX.Stop((Audio::eWorldSFX)0xC, cGameSFX::SFX_STOP_FIRST);
         FEAudio::PlayAnimAudioEvent("sfx_main_menu_highlight_close", false);
@@ -448,7 +513,7 @@ void SHMainMenu::CloseItem(TLComponentInstance* compinstance)
         compinstance->GetActiveSlide(),
         InlineHasher(nlStringLowerHash("locked")));
 
-    if (lockedComp != NULL)
+    if (lockedComp != NULL && mMenuItems.GetMenuItem() != NULL)
     {
         if (mMenuItems.GetMenuItem()->IsLocked())
         {
@@ -474,12 +539,38 @@ void SHMainMenu::Update(float fDeltaT)
 
     if (presentation->m_fadeDuration >= slide->m_start + slide->m_duration)
     {
-        m_itemDescriptions->Update(fDeltaT);
+        if (m_itemDescriptions != NULL)
+            m_itemDescriptions->Update(fDeltaT);
     }
+#ifdef TARGET_VITA
+    else if (mSnapMenuIntoPosition)
+    {
+        // fen fade fields can be endian-wrong; snap means UI is already final.
+    }
+#endif
     else
     {
         return;
     }
+
+#ifdef TARGET_VITA
+    // Pad unreliable on Vita3K — auto Friendly after a few ready frames.
+    {
+        static int s_vita_menu_frames;
+        if (++s_vita_menu_frames == 30)
+        {
+            const int fd = sceIoOpen("ux0:data/smstrikers/_vita_status.txt", SCE_O_WRONLY | SCE_O_CREAT | SCE_O_APPEND, 0666);
+            if (fd >= 0)
+            {
+                const char* msg = "friendly\n";
+                sceIoWrite(fd, msg, 9);
+                sceIoClose(fd);
+            }
+            onSelectFriendly(NULL);
+            return;
+        }
+    }
+#endif
 
     if (g_pFEInput->IsAutoPressed(FE_ALL_PADS, 0xE, true, NULL))
     {

@@ -142,6 +142,10 @@ void BundleFile::Close()
 /**
  * Offset/Address/Size: 0x840 | 0x801E8E0C | size: 0xA8
  */
+#ifdef TARGET_VITA
+#include "vita_bswap.h"
+#endif
+
 bool BundleFile::Open(const char* filename)
 {
     m_pFile = nlOpen(filename);
@@ -150,9 +154,15 @@ bool BundleFile::Open(const char* filename)
         return 0;
     }
     nlRead(m_pFile, m_pHeader, 0x10);
+#ifdef TARGET_VITA
+    vita_bswap_region(m_pHeader, 0x10, SWAP_U32);
+#endif
     nlSeek(m_pFile, m_pHeader->nDirectoryOffsetInSectors * m_pHeader->nSectorSize, 0);
     m_pDirectory = (BundleFileDirectoryEntry*)nlMalloc(m_pHeader->nNumFiles * 0xC, 0x20, 0);
     nlRead(m_pFile, m_pDirectory, m_pHeader->nNumFiles * 0xC);
+#ifdef TARGET_VITA
+    vita_bswap_region(m_pDirectory, m_pHeader->nNumFiles * 0xC, SWAP_U32);
+#endif
     return 1;
 }
 

@@ -614,8 +614,7 @@ void* glxGetDisplayedBuffer()
     return glx_FrameBuffer[glx_nBuffer ^ 1];
 }
 
-#pragma push
-#pragma pack(1)
+#pragma pack(push, 1)
 struct TargaHeader
 {
     /* 0x00 */ unsigned char imageIDLength;
@@ -631,7 +630,7 @@ struct TargaHeader
     /* 0x10 */ unsigned char bitsPerPixel;
     /* 0x11 */ unsigned char imageDescriptor;
 }; // total size: 0x12
-#pragma pop
+#pragma pack(pop)
 
 /**
  * Offset/Address/Size: 0xBAC | 0x801BF8FC | size: 0x1B0

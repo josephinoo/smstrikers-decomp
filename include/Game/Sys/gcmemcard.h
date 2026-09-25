@@ -185,15 +185,15 @@ public:
 
     MemCard(unsigned long slot);
 
-    long BeginCardAccess(const MemCardFunctor& Callback);
+    s32 BeginCardAccess(const MemCardFunctor& Callback);
     long CreateFile(const char* FileName, unsigned long FileSize, MemCard::ICON_CONFIG* pIconConfig, MemCard::MC_FILE*& pFile, const MemCardFunctor& Callback);
     long OpenFile(const char* FileName, MemCard::MC_FILE*& pFile, unsigned long* pFileLength);
-    long FormatCard(const MemCardFunctor& Callback);
+    s32 FormatCard(const MemCardFunctor& Callback);
     long DeleteFile(const char* FileName, const MemCardFunctor& Callback);
     long InternalReadFile(MemCard::MC_FILE* pFile, void* Buffer, unsigned long Length, unsigned long StartAt, const MemCardFunctor& Callback);
     long InternalWriteFile(MemCard::MC_FILE* pFile, void* Buffer, unsigned long Length, unsigned long StartAt, const MemCardFunctor& Callback, bool ResetTransfer);
-    long CloseFile(MemCard::MC_FILE* pFile);
-    long FileExists(const char* fileName);
+    s32 CloseFile(MC_FILE* pFile);
+    s32 FileExists(const char* fileName);
     long WriteFileIconData(MemCard::MC_FILE* pFile, void* pData, const MemCardFunctor& functor);
     unsigned long AlignBytesToSectorSize(unsigned long bytes);
 

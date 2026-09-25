@@ -38,6 +38,7 @@ void dClearCachedData();
 
 extern "C"
 {
+#if !defined(TARGET_VITA) && !defined(TARGET_PC)
     typedef void* dAllocFunction(unsigned long);
     typedef void* dReallocFunction(void*, unsigned long, unsigned long);
     typedef void dFreeFunction(void*, unsigned long);
@@ -45,6 +46,7 @@ extern "C"
     void dSetAllocHandler(dAllocFunction* fn);
     void dSetReallocHandler(dReallocFunction* fn);
     void dSetFreeHandler(dFreeFunction* fn);
+#endif
 }
 
 // SimpleCollisionSpace has no dedicated header; it is declared locally in each

@@ -28,7 +28,9 @@
 #include "NL/nlString.h"
 #include "NL/nlTask.h"
 
+#if !defined(TARGET_VITA) && !defined(TARGET_PC)
 extern "C" int nlPrintf(const char*, ...);
+#endif
 
 namespace PlatAudio
 {

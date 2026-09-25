@@ -639,7 +639,14 @@ void nlFont::DrawString(eGLView View, const FontCharString& Text, const nlVector
 
     if (m_TextureType == SplitFX && Passes == PASS_TextAndEffect)
     {
-        DrawString(View, Text, Position, EffectColour, EffectColour, Length, PASS_Effect, View != 0, pMatrix, 0);
+#ifdef TARGET_VITA
+        // ponytail: SplitFX effect textures often unresolved on Vita → atlas ghost overlay.
+        // Skip outline/effect pass until effect tex load is solid; text pass alone is enough.
+        if (m_EffectTextureHandles[0] != 0)
+#endif
+        {
+            DrawString(View, Text, Position, EffectColour, EffectColour, Length, PASS_Effect, View != 0, pMatrix, 0);
+        }
     }
 
     if (pOverrideColour != 0)

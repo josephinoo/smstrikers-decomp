@@ -22,8 +22,16 @@ typedef void (*appInitCallback)(void (*)(char*));
 typedef void* (*appGetEntryCallback)();
 typedef void (*AppLoaderCallback)(appInitCallback*, appGetNextCallback*, appGetEntryCallback*);
 
+#ifndef TARGET_VITA
 OSExecParams* __OSExecParams AT_ADDRESS(0x800030F0);
 s32 __OSAppLoaderOffset AT_ADDRESS(0x800030F4);
+#else
+// AT_ADDRESS pins these to fixed GameCube addresses, which also makes them a
+// definition in every translation unit. Off the GameCube they need to be a
+// declaration, with the single definition in the Vita platform layer.
+extern OSExecParams* __OSExecParams;
+extern s32 __OSAppLoaderOffset;
+#endif
 
 void OSExecv(const char* dolfile, const char** argv);
 void OSExecl(const char* dolfile, const char* arg0, ...);
