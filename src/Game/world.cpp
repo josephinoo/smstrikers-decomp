@@ -218,6 +218,52 @@ struct WorldEmitterChunkData
     /* 0x60 */ nlMatrix4 m_worldMatrix;
 }; // total size: 0xA0
 
+#ifdef TARGET_VITA
+static inline void SwapWorldWords(void* data, unsigned int offset, unsigned int size)
+{
+    u32* words = (u32*)((u8*)data + offset);
+    for (unsigned int i = 0; i < size / sizeof(u32); ++i)
+        words[i] = __builtin_bswap32(words[i]);
+}
+
+static void SwapWorldChunk(nlChunk* chunk)
+{
+    chunk->m_ID = __builtin_bswap32(chunk->m_ID);
+    chunk->m_Size = __builtin_bswap32(chunk->m_Size);
+
+    if (chunk->IsNestedChunk())
+    {
+        nlChunk* child = chunk->GetFirstChunk();
+        nlChunk* end = chunk->GetLastChunk();
+        while (child < end)
+        {
+            u32 childSize = __builtin_bswap32(child->m_Size);
+            SwapWorldChunk(child);
+            child = (nlChunk*)((u8*)child + sizeof(nlChunk) + childSize);
+        }
+        return;
+    }
+
+    void* data = chunk->GetData();
+    switch (chunk->GetID())
+    {
+    case 0x19003: SwapWorldWords(data, 0x80, 0x60); break;
+    case 0x19005: SwapWorldWords(data, 0x40, 0x60); break;
+    case 0x19101: SwapWorldWords(data, 0x40, 0x60); break;
+    case 0x19201: SwapWorldWords(data, 0x3C, 0x44); break;
+    case 0x1D001: SwapWorldWords(data, 0, sizeof(u32)); break;
+    case 0x1D002:
+        for (unsigned int offset = 0; offset + sizeof(CharacterPhysicsElement) <= chunk->GetSize(); offset += sizeof(CharacterPhysicsElement))
+        {
+            SwapWorldWords(data, offset, 0x40);
+            SwapWorldWords(data, offset + 0x60, sizeof(u32));
+            SwapWorldWords(data, offset + 0x84, 0x1C);
+        }
+        break;
+    }
+}
+#endif
+
 class FlareHandler
 {
 public:
@@ -534,6 +580,10 @@ bool World::LoadObjectData(const char* szWorldName)
         nlPrintf("Error: Failed to load world object data '%s'\n", szFullFileName);
         return false;
     }
+
+#ifdef TARGET_VITA
+    SwapWorldChunk((nlChunk*)pWorldData);
+#endif
 
     nlChunk* pLastChunk = ((nlChunk*)pWorldData)->GetLastChunk();
     pChunk = ((nlChunk*)pWorldData)->GetFirstChunk();

@@ -12,6 +12,9 @@
   - Implemented `vita_bswap_gx_texture_header` in `include/vita_bswap.h` to properly swap struct `GXTextureHeader` using mixed `SWAP_U32` and `SWAP_U16` classes.
   - Applied `vita_bswap_region(..., SWAP_U32)` to `BundleHeader` (0x20) and `BundleEntry` dictionary array in both asynchronous and synchronous `.glt` loaders.
   - Calls `vita_bswap_gx_texture_header` on every texture extracted from the `.glt` bundle.
+- `src/Game/world.cpp`: `World::LoadObjectData`
+  - Recursively swaps `.wld` chunk headers and the numeric fields in world objects, lights, emitters, helpers, and physics primitives while leaving names intact.
+  - Fixed the crash in `nlChunk::GetNextChunk()` after loading `mario_stadium.wld`; boot now reaches `PowerupModelPool::Initialize`.
 
 ===DIGEST===
 - **Loaders Byte-Swapped**:
