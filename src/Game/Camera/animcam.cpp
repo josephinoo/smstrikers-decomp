@@ -59,6 +59,29 @@ static inline nlChunk* nlGetNextChunk(nlChunk* chunk)
     return (nlChunk*)((u8*)chunk + chunk->m_Size + 8);
 }
 
+#ifdef TARGET_VITA
+static void SwapCameraFile(nlChunk* root)
+{
+    root->m_ID = __builtin_bswap32(root->m_ID);
+    root->m_Size = __builtin_bswap32(root->m_Size);
+    nlChunk* end = root->GetLastChunk();
+    for (nlChunk* chunk = root->GetFirstChunk(); chunk < end;)
+    {
+        const u32 size = __builtin_bswap32(chunk->m_Size);
+        nlChunk* next = (nlChunk*)((u8*)chunk + sizeof(nlChunk) + size);
+        chunk->m_ID = __builtin_bswap32(chunk->m_ID);
+        chunk->m_Size = size;
+        if (chunk->GetID() != 0x15503)
+        {
+            u32* words = (u32*)chunk->GetData();
+            for (u32 i = 0; i < size / sizeof(u32); ++i)
+                words[i] = __builtin_bswap32(words[i]);
+        }
+        chunk = next;
+    }
+}
+#endif
+
 template <class T>
 static inline void nlGetChunkDataAs(nlChunk* chunk, T*& out)
 {
@@ -292,6 +315,9 @@ bool cAnimCamera::LoadCameraAnimation(const char* szFilename, const char* szCame
     {
         return false;
     }
+#ifdef TARGET_VITA
+    SwapCameraFile((nlChunk*)pData);
+#endif
     begin = (nlChunk*)((u8*)pData + 8);
     end = (nlChunk*)((u8*)pData + ((nlChunk*)pData)->m_Size + 8);
 
