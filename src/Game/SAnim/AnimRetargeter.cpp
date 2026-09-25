@@ -42,10 +42,33 @@ static inline void* GetChunkData_ARL(nlChunk* chunk)
 AnimRetargetList* AnimRetargetList::Initialize(nlChunk* chunkData)
 {
     nlChunk* chunk = (nlChunk*)((u8*)chunkData + 8);
+#ifdef TARGET_VITA
+    chunk->m_ID = __builtin_bswap32(chunk->m_ID);
+    chunk->m_Size = __builtin_bswap32(chunk->m_Size);
+#endif
     AnimRetargetList* data = (AnimRetargetList*)GetChunkData_ARL(chunk);
 
+#ifdef TARGET_VITA
+    data->m_uHashID = __builtin_bswap32(data->m_uHashID);
+    data->m_NumAnimRetargets = __builtin_bswap32(data->m_NumAnimRetargets);
+    if (data->m_NumAnimRetargets == 0)
+    {
+        data->m_pAnimRetarget = NULL;
+        return data;
+    }
+#endif
+
     nlChunk* nextChunk = (nlChunk*)((u8*)chunk + chunk->m_Size + 0x10);
+#ifdef TARGET_VITA
+    nextChunk->m_ID = __builtin_bswap32(nextChunk->m_ID);
+    nextChunk->m_Size = __builtin_bswap32(nextChunk->m_Size);
+#endif
     data->m_pAnimRetarget = (AnimRetarget*)GetChunkData_ARL(nextChunk);
+#ifdef TARGET_VITA
+    data->m_pAnimRetarget->m_TargetHierarchySignature =
+        __builtin_bswap32(data->m_pAnimRetarget->m_TargetHierarchySignature);
+    data->m_pAnimRetarget->m_NumBones = __builtin_bswap32(data->m_pAnimRetarget->m_NumBones);
+#endif
 
     nlChunk* mapChunk;
     s32 off;
@@ -56,7 +79,16 @@ AnimRetargetList* AnimRetargetList::Initialize(nlChunk* chunkData)
     {
         mapChunk = (nlChunk*)((u8*)nextChunk + nextChunk->m_Size + 8);
         nextChunk = mapChunk;
+#ifdef TARGET_VITA
+        mapChunk->m_ID = __builtin_bswap32(mapChunk->m_ID);
+        mapChunk->m_Size = __builtin_bswap32(mapChunk->m_Size);
+#endif
         signed short* nextMap = (signed short*)GetChunkData_ARL(mapChunk);
+
+#ifdef TARGET_VITA
+        for (u32 mapIndex = 0; mapIndex < mapChunk->m_Size / sizeof(s16); ++mapIndex)
+            nextMap[mapIndex] = __builtin_bswap16(nextMap[mapIndex]);
+#endif
 
         *(signed short**)((u8*)data->m_pAnimRetarget + off + 8) = nextMap;
         off += 0xC;
