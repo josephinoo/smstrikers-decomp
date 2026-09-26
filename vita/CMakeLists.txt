@@ -218,6 +218,8 @@ target_compile_options(sms_entry PRIVATE
     -fcommon
 )
 target_link_options(sms_entry PRIVATE
+    -Wl,--undefined=_newlib_heap_size_user
+    -Wl,--undefined=sceUserMainThreadStackSize
     -Wl,--wrap=_ZN8FERender11RenderSceneEP7FEScene
     -Wl,--wrap=_ZN8FERender18RenderPresentationEPK14FEPresentation
     -Wl,--wrap=_ZN8FERender19RenderImageInstanceEPK15TLImageInstance
@@ -237,6 +239,7 @@ set_target_properties(sms_entry PROPERTIES EXCLUDE_FROM_ALL TRUE)
 # Its own title id so it can be installed next to the demo shell rather than
 # replacing a build we know runs.
 vita_create_self(sms_entry.bin sms_entry UNSAFE)
+set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d ATTRIBUTE2=12")
 vita_create_vpk(smstrikers-game.vpk VSTR00003 sms_entry.bin
     VERSION 01.00
     NAME "SM Strikers (game)"
