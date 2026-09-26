@@ -6,6 +6,10 @@
 #include "NL/nlList.h"
 #include "NL/nlString.h"
 
+#ifdef TARGET_VITA
+void VitaSwapCameraFile(nlChunk* root);
+#endif
+
 class cCameraData
 {
 public:

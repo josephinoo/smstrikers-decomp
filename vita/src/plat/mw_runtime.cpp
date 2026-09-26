@@ -15,7 +15,7 @@ __attribute__((used)) unsigned int _newlib_heap_size_user = 104 * 1024 * 1024;
 
 // The original game has deep loading call chains that overflow VitaSDK's
 // default main-thread stack while loading frontend camera animations.
-__attribute__((used)) unsigned int sceUserMainThreadStackSize = 4 * 1024 * 1024;
+extern __attribute__((used)) const unsigned int sceUserMainThreadStackSize = 4 * 1024 * 1024;
 
 // Lowest normal positive float, the companion of __float_max in link_stubs.cpp.
 int32_t __float_min[1] = { 0x00800000 };

@@ -60,7 +60,7 @@ static inline nlChunk* nlGetNextChunk(nlChunk* chunk)
 }
 
 #ifdef TARGET_VITA
-static void SwapCameraFile(nlChunk* root)
+void VitaSwapCameraFile(nlChunk* root)
 {
     root->m_ID = __builtin_bswap32(root->m_ID);
     root->m_Size = __builtin_bswap32(root->m_Size);
@@ -317,7 +317,7 @@ bool cAnimCamera::LoadCameraAnimation(const char* szFilename, const char* szCame
         return false;
     }
 #ifdef TARGET_VITA
-    SwapCameraFile((nlChunk*)pData);
+    VitaSwapCameraFile((nlChunk*)pData);
 #endif
     begin = (nlChunk*)((u8*)pData + 8);
     end = (nlChunk*)((u8*)pData + ((nlChunk*)pData)->m_Size + 8);

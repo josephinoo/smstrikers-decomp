@@ -763,6 +763,11 @@ static void AudioScriptEventHandler(Event* pEvent, void*)
         return;
     case 86:
     {
+#ifdef TARGET_VITA
+        // The Vita port has no script-audio backend. NIS event strings live in
+        // the original script VM and are not safe to dereference after load.
+        return;
+#endif
         NISData* pData;
         pEvent->GetData(&pData);
         NIS_EVENT_LOOKUP* pFound = nlBSearch<NIS_EVENT_LOOKUP, unsigned long>(

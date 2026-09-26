@@ -71,3 +71,6 @@ vita/**/*.bak
 Super Mario Strikers (USA).gct
 test.cpp
 update_bnr.py
+
+# Local third-party delegation bridge and its virtual environment.
+/tools/codex-antigravity-bridge/

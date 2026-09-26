@@ -38,6 +38,24 @@ Nis::Nis(NisHeader& header, char* data, int size)
     cSAnim* anim;
     int i;
 
+#ifdef TARGET_VITA
+    for (char* cursor = data; cursor < data + size;)
+    {
+        nlChunk* root = (nlChunk*)cursor;
+        const u32 rootSize = __builtin_bswap32(root->m_Size);
+        const u32 rootID = __builtin_bswap32(root->m_ID);
+        char* next = cursor + sizeof(nlChunk) + rootSize;
+        if ((rootID & 0x80FFFFFF) == 0x80015501)
+            VitaSwapCameraFile(root);
+        else
+        {
+            root->m_ID = rootID;
+            root->m_Size = rootSize;
+        }
+        cursor = next;
+    }
+#endif
+
     mHeader = &header;
     mTarget = header.target;
     mWinnerType = header.winnerType;

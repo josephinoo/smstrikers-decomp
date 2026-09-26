@@ -37,7 +37,14 @@ EmissionController::EmissionController(EffectsGroup* pEffectsGroup, unsigned sho
     m_Mirror.z = 1.0f;
     m_uUserData = 0;
 
+#ifndef TARGET_VITA
     InitializeSystemsFromGroup();
+#else
+    // Particle system loading is not ported yet. Keep the controller inert so
+    // NIS/gameplay can proceed without touching its GameCube effect data.
+    m_pUserEffects = NULL;
+    m_nUserEffects = 0;
+#endif
 
     m_fGround = 0.015625f;
     m_aFacing = 0;
