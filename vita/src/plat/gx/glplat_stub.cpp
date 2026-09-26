@@ -355,6 +355,9 @@ bool glplatStartup(struct gl_ScreenInfo* screenInfo)
     vglInitWithCustomSizes(0x800000, 960, 544, 0, 0, 0, 0, SCE_GXM_MULTISAMPLE_NONE);
 
     glViewport(0, 0, 960, 544);
+    // UI code uses scissored clears.  A scissor left enabled here would make
+    // every subsequent frame clear only that old UI rectangle.
+    glDisable(GL_SCISSOR_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -371,6 +374,7 @@ void glplatBeginFrame(void)
         glplatStartup(nullptr);
     }
     glViewport(0, 0, 960, 544);
+    glDisable(GL_SCISSOR_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
