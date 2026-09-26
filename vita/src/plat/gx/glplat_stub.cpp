@@ -402,6 +402,12 @@ void glplatSendFrame(void)
         GLRenderList* rl = gl_ViewGetRenderList((eGLView)v);
         if (!rl || rl->IsEmpty()) continue;
 
+        // The original GX backend clears depth at view boundaries.  Keeping
+        // depth from an earlier pass makes later world/UI views disappear.
+        if (glViewGetDepthClear((eGLView)v)) {
+            glClear(GL_DEPTH_BUFFER_BIT);
+        }
+
         if ((eGLView)v >= GLV_FrontEnd) {
             s_fe_queue_n = 0;
             gl_ViewIterate((eGLView)v, vita_packet_render_cb); // queues
