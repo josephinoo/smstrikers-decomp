@@ -74,7 +74,8 @@ static void SwapCameraFile(nlChunk* root)
         if (chunk->GetID() != 0x15503)
         {
             u32* words = (u32*)chunk->GetData();
-            for (u32 i = 0; i < size / sizeof(u32); ++i)
+            const u32 dataSize = (u8*)next - (u8*)words;
+            for (u32 i = 0; i < dataSize / sizeof(u32); ++i)
                 words[i] = __builtin_bswap32(words[i]);
         }
         chunk = next;

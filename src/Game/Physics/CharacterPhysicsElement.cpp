@@ -34,6 +34,22 @@ static inline void CopyPhysicsElements(CharacterPhysicsData* pPhysicsData, Chara
     }
 }
 
+#ifdef TARGET_VITA
+static void SwapPhysicsElement(CharacterPhysicsElement& element)
+{
+    u32* matrix = reinterpret_cast<u32*>(&element.matLocalToParent);
+    for (u32 i = 0; i < 16; ++i)
+        matrix[i] = __builtin_bswap32(matrix[i]);
+
+    element.uHashID = __builtin_bswap32(element.uHashID);
+    element.uParentHashID = __builtin_bswap32(element.uParentHashID);
+    element.uPrimitiveType = __builtin_bswap32(element.uPrimitiveType);
+    u32* dimensions = reinterpret_cast<u32*>(&element.fWidth);
+    for (u32 i = 0; i < 5; ++i)
+        dimensions[i] = __builtin_bswap32(dimensions[i]);
+}
+#endif
+
 /**
  * Offset/Address/Size: 0x0 | 0x801FE13C | size: 0x2AC
  */
@@ -50,11 +66,18 @@ bool LoadCharacterPhysicsElements(const char* szPhysicsElementsFilename, Charact
     }
 
     u32 dataSize = *((u32*)(pFileData + 4));
+#ifdef TARGET_VITA
+    dataSize = __builtin_bswap32(dataSize);
+#endif
     outerChunk = (nlChunk*)(pFileData + 8);
     endChunk = (nlChunk*)(pFileData + dataSize + 8);
 
     while (outerChunk < endChunk)
     {
+#ifdef TARGET_VITA
+        outerChunk->m_ID = __builtin_bswap32(outerChunk->m_ID);
+        outerChunk->m_Size = __builtin_bswap32(outerChunk->m_Size);
+#endif
         s32 chunkID = (s32)outerChunk->m_ID;
         s32 chunkType = chunkID & 0x80FFFFFF;
 
@@ -63,13 +86,21 @@ bool LoadCharacterPhysicsElements(const char* szPhysicsElementsFilename, Charact
         case 0x0001D001:
         {
             pPhysicsData->physicsElementCount = *(u32*)nlGetChunkData(outerChunk);
+#ifdef TARGET_VITA
+            pPhysicsData->physicsElementCount = __builtin_bswap32(pPhysicsData->physicsElementCount);
+#endif
             pPhysicsData->pPhysicsElements = (CharacterPhysicsElement*)nlMalloc(pPhysicsData->physicsElementCount * sizeof(CharacterPhysicsElement), 8, false);
             break;
         }
 
         case 0x0001D002:
         {
-            CopyPhysicsElements(pPhysicsData, (CharacterPhysicsElement*)nlGetChunkData(outerChunk));
+            CharacterPhysicsElement* elements = (CharacterPhysicsElement*)nlGetChunkData(outerChunk);
+#ifdef TARGET_VITA
+            for (u32 i = 0; i < pPhysicsData->physicsElementCount; ++i)
+                SwapPhysicsElement(elements[i]);
+#endif
+            CopyPhysicsElements(pPhysicsData, elements);
             break;
         }
         }
