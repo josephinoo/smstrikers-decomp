@@ -77,12 +77,17 @@ static void SwapSAnimChunks(nlChunk* outer)
         }
         else if (!native && (type == 0x17101 || type == 0x17103 || type == 0x17007))
         {
-            SwapSAnim16(chunk->GetData(), size);
+            // Aligned chunks have padding between their header and payload.  The
+            // serialized size includes that padding, so using it here would swap
+            // into the header of the following chunk.
+            const u32 dataSize = (u8*)next - (u8*)chunk->GetData();
+            SwapSAnim16(chunk->GetData(), dataSize);
         }
         else if (!native && (type == 0x17102 || type == 0x17008 || type == 0x17009 ||
                              type == 0x1700A || type == 0x17003))
         {
-            SwapSAnim32(chunk->GetData(), size);
+            const u32 dataSize = (u8*)next - (u8*)chunk->GetData();
+            SwapSAnim32(chunk->GetData(), dataSize);
         }
         chunk = next;
     }
@@ -200,8 +205,15 @@ cSAnim* cSAnim::Initialize(nlChunk* pChunk)
  */
 void cSAnim::BlendRot(int nodeIndex, int remappedNodeIndex, float tNorm, float weight, cPoseAccumulator* acc, bool additive) const
 {
+    if (remappedNodeIndex < 0 || (unsigned int)remappedNodeIndex >= m_nNumNodes ||
+        m_pRotKeys == NULL || m_pNodeProperties == NULL)
+    {
+        acc->BlendRotIdentity(nodeIndex, weight);
+        return;
+    }
+
     void* pRawKeys = ((void**)m_pRotKeys)[remappedNodeIndex];
-    if (pRawKeys != NULL && (unsigned int)remappedNodeIndex < m_nNumNodes)
+    if (pRawKeys != NULL)
     {
         unsigned int props = m_pNodeProperties[remappedNodeIndex];
 
@@ -290,8 +302,15 @@ void cSAnim::BlendRot(int nodeIndex, int remappedNodeIndex, float tNorm, float w
  */
 void cSAnim::BlendScale(int nodeIndex, int remappedNodeIndex, float tNorm, float weight, cPoseAccumulator* acc, bool additive) const
 {
+    if (remappedNodeIndex < 0 || (unsigned int)remappedNodeIndex >= m_nNumNodes ||
+        m_pScaleKeys == NULL || m_pNodeProperties == NULL)
+    {
+        acc->BlendScaleIdentity(nodeIndex, weight);
+        return;
+    }
+
     PackedScale* pKeys = m_pScaleKeys[remappedNodeIndex];
-    if (pKeys != NULL && (unsigned int)remappedNodeIndex < m_nNumNodes)
+    if (pKeys != NULL)
     {
         if (m_pNodeProperties[remappedNodeIndex] & 0x8)
         {
@@ -350,8 +369,15 @@ void cSAnim::BlendTrans(int nAccumulatorNode, int nSAnimNode, float fTime, float
         return;
     }
 
+    if (nSAnimNode < 0 || (unsigned int)nSAnimNode >= m_nNumNodes ||
+        m_pTransKeys == NULL || m_pNodeProperties == NULL)
+    {
+        pAccumulator->BlendTransIdentity(nAccumulatorNode, fWeight);
+        return;
+    }
+
     PackedTrans* pKeys = m_pTransKeys[nSAnimNode];
-    if (pKeys != NULL && (unsigned int)nSAnimNode < m_nNumNodes)
+    if (pKeys != NULL)
     {
         if (m_pNodeProperties[nSAnimNode] & 0x4)
         {

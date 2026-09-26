@@ -65,12 +65,14 @@ EmissionController::EmissionController(EffectsGroup* pEffectsGroup, unsigned sho
     m_bVisible = true;
     m_bDisabled = false;
 
+#ifndef TARGET_VITA
     if (m_pGroup->m_isLingering != 0)
     {
         numLingeringSystems++;
     }
 
     EmissionManager::KillOldest(numLingeringSystems - 12, true);
+#endif
 }
 
 /**
@@ -173,10 +175,12 @@ EmissionController::~EmissionController()
         delete[] m_pUserEffects;
     }
 
+#ifndef TARGET_VITA
     if (m_pGroup->m_isLingering != 0)
     {
         numLingeringSystems--;
     }
+#endif
 }
 
 /**
